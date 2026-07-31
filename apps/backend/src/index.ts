@@ -10,6 +10,11 @@ import { logger } from './utils/logger';
 import routes from './routes';
 import { errorHandler } from './middleware/error.middleware';
 
+import passport from 'passport';
+import './config/passport';
+import authRoutes from './routes/auth.routes';
+import aiRoutes from './routes/ai.routes';
+
 const app = express();
 
 app.use(helmet());
@@ -22,7 +27,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(compression());
 app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
+app.use(passport.initialize());
+
 app.use('/api/v1', routes);
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/ai', aiRoutes);
 
 app.use(errorHandler);
 
