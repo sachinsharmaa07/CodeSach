@@ -2,11 +2,11 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 
 const signAccessToken = (payload: { id: string; email: string; role: string }) => {
-  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN });
+  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN } as jwt.SignOptions);
 };
 
 const signRefreshToken = (payload: { id: string; email: string; role: string }) => {
-  return jwt.sign(payload, env.JWT_REFRESH_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRES_IN });
+  return jwt.sign(payload, env.JWT_REFRESH_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRES_IN } as jwt.SignOptions);
 };
 
 export const authService = {

@@ -1,11 +1,13 @@
 import { Router, Response, NextFunction } from 'express';
 import { protect } from '../middleware/auth.middleware';
+import { aiLimiter } from '../middleware/security.middleware';
 import { aiService } from '../services/ai.service';
 import { AuthRequest } from '../types';
 
 const router = Router();
 
 router.use(protect);
+router.use(aiLimiter);
 
 router.post('/hint', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

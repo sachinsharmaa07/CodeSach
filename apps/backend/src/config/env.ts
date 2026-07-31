@@ -16,7 +16,7 @@ const schema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().min(1),
   GOOGLE_CALLBACK_URL: z.string().min(1),
   GEMINI_API_KEY: z.string().min(1),
-  GROK_API_KEY: z.string().optional(),
+  JUDGE0_API_URL: z.string().default('http://localhost:2358'),
 });
 
 const parsed = schema.safeParse(process.env);

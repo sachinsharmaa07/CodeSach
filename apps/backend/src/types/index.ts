@@ -1,12 +1,21 @@
 import { Request } from 'express';
 
-export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    role: 'user' | 'admin';
-  };
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        role: 'user' | 'admin';
+        username?: string;
+        avatar?: string;
+      };
+    }
+  }
 }
+
+export type AuthRequest = Request;
 
 export interface ApiResponse<T = null> {
   status: 'success' | 'error';

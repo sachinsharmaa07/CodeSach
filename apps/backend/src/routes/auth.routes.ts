@@ -4,14 +4,14 @@ import '../config/passport';
 import { authController } from '../controllers/auth.controller';
 import { protect } from '../middleware/auth.middleware';
 import { authService } from '../services/auth.service';
-import { IUser } from '../models/user.model';
 import { env } from '../config/env';
+import { authLimiter } from '../middleware/security.middleware';
 
 const router = Router();
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.post('/refresh', authController.refresh);
+router.post('/register', authLimiter, authController.register);
+router.post('/login', authLimiter, authController.login);
+router.post('/refresh', authLimiter, authController.refresh);
 router.get('/me', protect, authController.me);
 
 router.get(
@@ -27,9 +27,9 @@ router.get(
   }),
   (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = req.user as IUser;
+      const user = req.user as any;
       const result = authService.googleLogin({
-        id: user.id,
+        id: user._id || user.id,
         email: user.email,
         role: user.role,
         username: user.username,
