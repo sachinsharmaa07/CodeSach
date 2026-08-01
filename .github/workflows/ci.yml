@@ -1,0 +1,45 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies (Root)
+      run: npm install
+
+    - name: Install Backend Dependencies
+      working-directory: ./apps/backend
+      run: npm install
+
+    - name: Install Frontend Dependencies
+      working-directory: ./apps/frontend
+      run: npm install
+
+    - name: Lint Backend
+      working-directory: ./apps/backend
+      run: npm run lint
+      continue-on-error: true # Prevents pipeline from fully failing during migration phases
+
+    - name: Lint Frontend
+      working-directory: ./apps/frontend
+      run: npm run lint
+      continue-on-error: true
+
+    - name: Build Frontend
+      working-directory: ./apps/frontend
+      run: npm run build

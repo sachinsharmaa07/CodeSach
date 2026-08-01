@@ -1,35 +1,98 @@
 @import 'tailwindcss';
 
-@theme {
-  --color-brand: #7c3aed;
-  --color-brand-light: #a78bfa;
-  --color-surface: #0f0f0f;
-  --color-surface-2: #1a1a1a;
-  --color-surface-3: #242424;
-  --color-border: #2a2a2a;
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+/* ── Design tokens ─────────────────────────────────────── */
+:root {
+  --color-brand:        #7c3aed;
+  --color-brand-light:  #a78bfa;
+
+  /* Light mode defaults */
+  --color-bg:           #f5f5f7;
+  --color-surface:      #ffffff;
+  --color-surface-2:    #f0f0f5;
+  --color-surface-3:    #e8e8f0;
+  --color-border:       #d4d4e0;
+  --color-text:         #111111;
+  --color-text-muted:   #666680;
+  --color-card:         rgba(255,255,255,0.8);
+  --color-card-border:  rgba(0,0,0,0.08);
+  --scrollbar-thumb:    #c0c0d0;
 }
 
-* {
+.dark {
+  --color-bg:           #0a0a0f;
+  --color-surface:      #111116;
+  --color-surface-2:    #18181f;
+  --color-surface-3:    #222230;
+  --color-border:       #2a2a3a;
+  --color-text:         #e8e8f0;
+  --color-text-muted:   #888899;
+  --color-card:         rgba(255,255,255,0.03);
+  --color-card-border:  rgba(255,255,255,0.07);
+  --scrollbar-thumb:    #333345;
+}
+
+/* ── Base ──────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
   border-color: var(--color-border);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+html {
+  background: var(--color-bg);
 }
 
 body {
-  background: var(--color-surface);
-  color: #e5e5e5;
-  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: var(--scrollbar-thumb);
   border-radius: 2px;
+}
+
+/* ── Prose (for markdown rendering in dark+light) ──────── */
+.prose { color: var(--color-text); }
+.prose code {
+  background: var(--color-surface-2);
+  color: var(--color-brand-light);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.875em;
+  font-family: 'JetBrains Mono', monospace;
+}
+.prose pre {
+  background: var(--color-surface-2) !important;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+}
+.prose pre code {
+  background: transparent;
+  padding: 0;
+  color: var(--color-text);
+}
+.prose strong { color: var(--color-text); }
+.prose h1, .prose h2, .prose h3 { color: var(--color-text); }
+.prose blockquote { border-left-color: var(--color-brand); }
+
+/* ── Theme-aware utility classes ───────────────────────── */
+.bg-surface   { background: var(--color-surface); }
+.bg-surface-2 { background: var(--color-surface-2); }
+.bg-surface-3 { background: var(--color-surface-3); }
+.text-main    { color: var(--color-text); }
+.text-muted   { color: var(--color-text-muted); }
+.border-subtle { border-color: var(--color-border); }
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-card-border);
+  border-radius: 12px;
 }
