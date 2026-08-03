@@ -29,14 +29,21 @@ This repository follows a monorepo structure designed for maintainability and se
 
 ```text
 CodeSach/
-├── .github/workflows/    # 🤖 Contains the CI/CD pipeline (ci.yml) for GitHub Actions.
+├── .github/workflows/    # 🤖 CI/CD Pipelines. Contains `ci.yml` which automates testing and deployment to EC2 on every push.
 ├── apps/
-│   ├── backend/          # ⚙️ Node.js/Express API. Handles auth, database, and business logic.
-│   └── frontend/         # 💻 React.js Application. The user interface.
-├── docker/               # 🐳 Miscellaneous Docker configurations.
-├── k8s/                  # ☸️ Kubernetes manifests (Deployments, Services, PVCs) for scaling.
+│   ├── backend/          # ⚙️ Node.js/Express API. Handles authentication, database modeling, business logic, and communicates with Judge0.
+│   │   ├── src/          # Source code including controllers, models, routes, and services.
+│   │   ├── package.json  # Backend dependencies (e.g., Express, Mongoose, Passport).
+│   │   └── Dockerfile    # Instructions to build the backend container image.
+│   └── frontend/         # 💻 React.js Application. The user interface built with Vite, Tailwind CSS, and Zustand.
+│       ├── src/          # React components, pages, state management, and API clients.
+│       ├── package.json  # Frontend dependencies (e.g., React, Monaco Editor, Framer Motion).
+│       └── Dockerfile    # Instructions to build the frontend container and serve it via Nginx.
+├── docker/               # 🐳 Miscellaneous Docker configurations and helper scripts.
+├── k8s/                  # ☸️ Kubernetes manifests (Deployments, Services, PVCs) for advanced scaling.
 ├── docker-compose.yml    # 📦 Local development environment using Docker Compose.
 ├── docker-compose.prod.yml # 🚀 Production environment configuration using pre-built images.
+├── Caddyfile             # 🔒 Reverse proxy configuration for automatic HTTPS via Let's Encrypt.
 └── mykey.pem             # 🔑 (Local only) SSH key for accessing the AWS EC2 instance.
 ```
 
@@ -64,8 +71,17 @@ CodeSach leverages a modern DevOps stack to automate testing, building, and depl
 
 ### Docker & Containerization
 
-- **Purpose**: Eliminates the "it works on my machine" problem.
-- **How it works**: Both the `frontend` and `backend` have their own `Dockerfile`. We use `docker-compose.yml` to spin up the entire application stack (Frontend, Backend, and MongoDB) locally with a single command (`docker-compose up`).
+**Why Docker?**
+Traditionally, software behaves differently depending on the operating system or environment it runs in. Docker solves the classic "it works on my machine" problem by packaging the application and all its dependencies into standardized units called **Containers**.
+
+**What it does:**
+
+- **Isolation:** The frontend, backend, and database run in their own isolated containers without interfering with the host OS.
+- **Consistency:** The exact same image that is tested in the CI pipeline is deployed to production.
+- **Portability:** You can deploy the app on any server (AWS, GCP, Azure) that has Docker installed, without worrying about installing Node.js or MongoDB on the server itself.
+
+**How it works in CodeSach:**
+Both the `frontend` and `backend` directories have their own `Dockerfile`. These files contain instructions on how to build the app environments. We use `docker-compose.yml` to orchestrate spinning up the entire stack locally with a single command (`docker compose up`). In production, `docker-compose.prod.yml` pulls the pre-built images from Docker Hub and wires them together with a Caddy reverse proxy for HTTPS.
 
 ### GitHub Actions (CI/CD)
 
@@ -79,8 +95,22 @@ CodeSach leverages a modern DevOps stack to automate testing, building, and depl
 
 ### Kubernetes (k8s)
 
-- **Purpose**: Container orchestration for infinite scalability.
-- **How it works**: While currently deployed via Docker Compose on EC2 for simplicity, the `k8s/` directory contains production-ready manifests (`Deployments`, `Services`, and `PersistentVolumeClaims`). These files describe the desired state of the application, allowing Kubernetes to automatically manage load balancing, auto-scaling, and self-healing across a cluster of nodes if you choose to migrate to a K8s cluster (like EKS).
+**Why Kubernetes?**
+While Docker is great for running containers, it doesn't automatically handle what happens if a container crashes, or if thousands of users suddenly flood the site and you need 10 backend containers instead of 1. Kubernetes is a container orchestration platform that solves this.
+
+**What it does:**
+
+- **Auto-Scaling:** Automatically spins up new backend containers when CPU usage spikes.
+- **Self-Healing:** Restarts containers that fail or become unresponsive.
+- **Load Balancing:** Distributes incoming traffic evenly across all available containers.
+
+**How it works in CodeSach:**
+While the app is currently deployed via a single EC2 instance using Docker Compose for simplicity, the `k8s/` directory contains production-ready Kubernetes manifests.
+
+- **Deployments:** Define how many replicas of the frontend and backend should run.
+- **Services:** Provide stable internal IP addresses to route traffic between the microservices.
+- **PersistentVolumeClaims (PVCs):** Ensure MongoDB data is saved to a persistent disk, so data isn't lost if the database pod restarts.
+  If CodeSach outgrows a single EC2 instance, these manifests allow for a seamless migration to a managed cluster like Amazon EKS.
 
 ---
 
@@ -131,6 +161,7 @@ Add your production secrets (e.g., `MONGODB_URI`, `JWT_SECRET`, `GOOGLE_CLIENT_I
 
 1. Go to [DuckDNS](https://www.duckdns.org/) and create a subdomain.
 2. Point it to your EC2 instance's IP address.
-3. Ensure **Port 80** is open in your AWS Security Group.
+3. Ensure **Port 80** and **Port 443** (HTTPS) are open in your AWS Security Group.
+4. Ensure **Port 22** (SSH) remains open so GitHub Actions can deploy the code.
 
 Once this is done, pushing code to the `main` branch will automatically build and deploy your updates!
