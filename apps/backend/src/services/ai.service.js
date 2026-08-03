@@ -7,6 +7,10 @@ const groq = new Groq({ apiKey: env.GROQ_API_KEY });
  * Get a hint for a programming problem
  */
 export async function getHint(problemTitle, userCode, message, language) {
+  if (!env.GROQ_API_KEY) {
+    return 'AI features are currently disabled because GROQ_API_KEY is not configured in the environment.';
+  }
+
   const prompt = `You are an expert AI programming assistant. The user is solving the problem "${problemTitle}".
 Their current code in ${language} is:
 \`\`\`${language}
@@ -35,6 +39,10 @@ Provide a concise, helpful hint without writing the full solution for them. Keep
  * Generate Problem Description, Test Cases, and Starter Code
  */
 export async function generateProblemDetails(title) {
+  if (!env.GROQ_API_KEY) {
+    throw new Error('GROQ_API_KEY is missing. Cannot generate problem details.');
+  }
+
   const prompt = `You are a technical content creator for a LeetCode-style platform. Generate the problem details for the data structure and algorithm problem: "${title}".
 
 Return ONLY a valid JSON object matching this exact schema, with NO extra markdown formatting outside the JSON, NO codeblock backticks (do not wrap in \`\`\`json), just the raw JSON object string:
@@ -48,18 +56,8 @@ Return ONLY a valid JSON object matching this exact schema, with NO extra markdo
       "isHidden": boolean (make 2 visible, 3 hidden)
     }
   ],
-  "starterCode": {
-    "javascript": "function problemName(arg1, arg2) {\\n  // Write your code here\\n}",
-    "java": "class Solution {\\n    public ReturnType problemName(Type1 arg1, Type2 arg2) {\\n        // Write your code here\\n    }\\n}",
-    "cpp": "class Solution {\\npublic:\\n    ReturnType problemName(Type1 arg1, Type2 arg2) {\\n        // Write your code here\\n    }\\n};",
-    "c": "ReturnType problemName(Type1 arg1, Type2 arg2) {\\n    // Write your code here\\n}"
-  },
-  "harness": {
-    "javascript": "const fs = require('fs');\\n{{USER_CODE}}\\nconst input = fs.readFileSync('/dev/stdin', 'utf-8').trim().split('\\\\n');\\nconsole.log(JSON.stringify(problemName(JSON.parse(input[0]))));",
-    "java": "import java.util.*;\\nimport java.io.*;\\n{{USER_CODE}}\\npublic class Main {\\n    public static void main(String[] args) throws Exception {\\n        Scanner sc = new Scanner(System.in);\\n        // Read stdin, instantiate Solution, call method, print result\\n    }\\n}",
-    "cpp": "#include <iostream>\\n#include <vector>\\nusing namespace std;\\n{{USER_CODE}}\\nint main() {\\n    // Read stdin, instantiate Solution, call method, print result\\n    return 0;\\n}",
-    "c": "#include <stdio.h>\\n#include <stdlib.h>\\n{{USER_CODE}}\\nint main() {\\n    // Read stdin, call method, print result\\n    return 0;\\n}"
-  },
+    }
+  ],
   "parameters": [
     { "name": "nums", "type": "integer array", "description": "Input array containing integers" },
     { "name": "target", "type": "integer", "description": "Target sum" }
@@ -73,10 +71,10 @@ Return ONLY a valid JSON object matching this exact schema, with NO extra markdo
     "better": "Explanation and code for better approach...",
     "optimal": "Explanation and optimal code approach..."
   }
+  }
 }
 
-Make sure there are at least 5 test cases. Ensure starterCode has the PROPER and exact LeetCode-style function signatures (names, return types, and arguments based on the specific problem context). Do NOT use generic placeholders like "solution()".
-The \`harness\` MUST correctly parse the \`tc.input\` format you generate, call the user's function from \`starterCode\`, and print the result. Replace \`problemName\` in the harness with the exact function name you used in starterCode!`;
+Make sure there are at least 5 test cases. Ensure parameters are correctly typed (integer, string, boolean, integer array, string array). Return the exact JSON structure specified above.`;
 
   try {
     const response = await groq.chat.completions.create({

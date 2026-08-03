@@ -1,28 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play,
   Send,
   Loader2,
   CheckCircle,
   XCircle,
-  Code2,
   AlertTriangle,
   Terminal,
   RotateCcw,
   Bot,
+  Lightbulb,
+  BookOpen,
+  ChevronRight,
+  Menu,
+  ChevronDown,
+  Info,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
-import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { AiChat } from '@/components/AiChat';
 import { problemApi, submissionApi } from '@/services/problem.service';
 import { useThemeStore } from '@/store/theme.store';
-import api from '@/lib/axios';
 import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
+import { cn } from '@/lib/utils';
 
 const DEFAULT_CODE = {
   javascript: `// Write your solution here`,
@@ -49,8 +54,15 @@ export const ProblemDetail = () => {
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [results, setResults] = useState(null);
-  const [activeTab, setActiveTab] = useState('problem'); // 'problem' | 'testcases' | 'results'
+
+  // Tabs and Selections
+  const [activeTab, setActiveTab] = useState('problem'); // 'problem' | 'testcases' | 'results' | 'ai'
+  const [selectedTestCase, setSelectedTestCase] = useState(0);
+  const [selectedResultCase, setSelectedResultCase] = useState(0);
+
+  // AI Chat
   const [aiOpen, setAiOpen] = useState(false);
+  const [initialAiMessage, setInitialAiMessage] = useState('');
 
   useEffect(() => {
     if (!slug) return;
@@ -61,7 +73,6 @@ export const ProblemDetail = () => {
         const p = res.data.data.problem;
         setProblem(p);
         setIsSolved(res.data.data.isSolved || false);
-        // Use saved starter code or default
         const starter = p.starterCode?.get
           ? p.starterCode.get(language) || p.starterCode[language]
           : p.starterCode?.[language];
@@ -70,6 +81,11 @@ export const ProblemDetail = () => {
       .catch(() => toast.error('Failed to load problem'))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    setSelectedTestCase(0);
+    setSelectedResultCase(0);
+  }, [activeTab, results]);
 
   const switchLanguage = (lang) => {
     setLanguage(lang);
@@ -131,23 +147,22 @@ export const ProblemDetail = () => {
     }
   };
 
+  const triggerAi = (msg) => {
+    setInitialAiMessage(msg);
+    setAiOpen(true);
+  };
+
   if (loading)
     return (
-      <div
-        className="flex items-center justify-center h-64 gap-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        <Loader2 size={16} className="animate-spin text-violet-500" />
-        <span className="text-sm">Loading problem…</span>
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-950 text-neutral-400">
+        <Loader2 size={24} className="animate-spin text-violet-500 mr-2" />
+        <span className="text-sm font-medium">Loading workspace...</span>
       </div>
     );
 
   if (!problem)
     return (
-      <div
-        className="flex items-center justify-center h-64"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-950 text-neutral-400">
         <span className="text-sm">Problem not found.</span>
       </div>
     );
@@ -156,75 +171,92 @@ export const ProblemDetail = () => {
   const passedCount = results ? results.filter((r) => r.passed).length : 0;
   const allPassed = results && passedCount === results.length;
 
+  const tabs = [
+    { id: 'problem', label: 'Problem', icon: BookOpen },
+    { id: 'testcases', label: `Test Cases (${visibleTestCases.length})`, icon: Code2 },
+    {
+      id: 'results',
+      label: results ? `Results (${passedCount}/${results.length})` : 'Results',
+      icon: Terminal,
+    },
+    { id: 'ai', label: 'AI Solutions', icon: Bot },
+  ];
+
   return (
-    <div style={{ height: 'calc(100vh - 4rem)', width: '100%' }}>
+    <div className="h-[calc(100vh-4rem)] w-full bg-[#0a0a0a] p-2 font-sans overflow-hidden">
       <Allotment>
-        <Allotment.Pane minSize={300}>
+        <Allotment.Pane minSize={350} preferredSize="40%">
           {/* ── LEFT PANEL ─── */}
-          <div
-            className="flex flex-col rounded-xl border overflow-hidden"
-            style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}
-          >
-            {/* Tabs */}
-            <div className="flex border-b shrink-0" style={{ borderColor: 'var(--color-border)' }}>
-              {[
-                { id: 'problem', label: 'Problem' },
-                { id: 'testcases', label: `Test Cases (${visibleTestCases.length})` },
-                {
-                  id: 'results',
-                  label: results ? `Results (${passedCount}/${results.length})` : 'Results',
-                },
-                { id: 'ai-explain', label: 'Explanation (AI)' },
-                { id: 'ai-hint', label: 'Hints (AI)' },
-                { id: 'ai-solution', label: 'Solution (AI)' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className="px-4 py-2.5 text-sm font-medium transition-colors border-b-2"
-                  style={{
-                    color:
-                      activeTab === tab.id ? 'var(--color-brand-light)' : 'var(--color-text-muted)',
-                    borderBottomColor: activeTab === tab.id ? 'var(--color-brand)' : 'transparent',
-                    background: 'transparent',
-                  }}
-                >
-                  {tab.label}
-                  {tab.id === 'results' && results && (
-                    <span
-                      className={`ml-1.5 text-xs ${allPassed ? 'text-emerald-400' : 'text-red-400'}`}
-                    >
-                      {allPassed ? '✓' : '✗'}
-                    </span>
-                  )}
-                </button>
-              ))}
+          <div className="flex flex-col h-full rounded-xl border border-white/10 bg-[#0f0f11] overflow-hidden mr-1 shadow-2xl relative">
+            {/* Tabs Header */}
+            <div className="flex border-b border-white/5 bg-white/[0.02] p-2 gap-1 overflow-x-auto no-scrollbar shrink-0">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      'relative px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap',
+                      isActive
+                        ? 'text-white'
+                        : 'text-neutral-400 hover:text-neutral-200 hover:bg-white/5',
+                    )}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="active-tab"
+                        className="absolute inset-0 bg-white/10 rounded-lg"
+                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    <Icon
+                      size={14}
+                      className={cn('relative z-10', isActive ? 'text-violet-400' : '')}
+                    />
+                    <span className="relative z-10">{tab.label}</span>
+                    {tab.id === 'results' && results && (
+                      <span
+                        className={cn(
+                          'relative z-10 ml-1 rounded-full px-1.5 py-0.5 text-[10px]',
+                          allPassed
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : 'bg-rose-500/20 text-rose-400',
+                        )}
+                      >
+                        {allPassed ? 'Passed' : 'Failed'}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Tab content */}
-            <div className="flex-1 overflow-y-auto p-5">
+            {/* Tab Content */}
+            <div className="flex-1 overflow-y-auto p-6 scroll-smooth custom-scrollbar">
               {/* ── PROBLEM TAB ── */}
               {activeTab === 'problem' && (
-                <div className="space-y-5">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-8"
+                >
                   {/* Header */}
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h1 className="text-xl font-bold" style={{ color: 'var(--color-text)' }}>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <h1 className="text-2xl font-bold text-white tracking-tight">
                         {problem.title}
                       </h1>
                       {isSolved && (
-                        <span className="flex items-center gap-1 text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                          <CheckCircle size={12} /> Solved
+                        <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                          <CheckCircle size={14} /> Solved
                         </span>
                       )}
                     </div>
-
-                    <div
-                      className="flex items-center gap-3 text-xs flex-wrap"
-                      style={{ color: 'var(--color-text-muted)' }}
-                    >
+                    <div className="flex items-center gap-3 text-xs font-medium text-neutral-400 flex-wrap">
                       <Badge label={problem.difficulty} variant={problem.difficulty} />
-                      <span>
+                      <span className="bg-white/5 px-2 py-1 rounded-md">
                         Acceptance:{' '}
                         {problem.totalSubmissions > 0
                           ? Math.round(
@@ -233,642 +265,505 @@ export const ProblemDetail = () => {
                           : 0}
                         %
                       </span>
-                      <span>Solves: {problem.acceptedSubmissions}</span>
-                      <span>Time Limit: {problem.timeLimit || 2000}ms</span>
-                      <span>Memory Limit: {problem.memoryLimit || 256}MB</span>
+                      <span className="bg-white/5 px-2 py-1 rounded-md">
+                        Time Limit: {problem.timeLimit || 2000}ms
+                      </span>
                     </div>
+                    {problem.tags?.length > 0 && (
+                      <div className="flex gap-2 flex-wrap pt-2">
+                        {problem.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[11px] px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 font-semibold"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-                    <div className="flex gap-2 flex-wrap mt-1">
-                      {problem.tags?.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[11px] px-2 py-1 rounded-md bg-white/5 border border-white/10"
-                          style={{ color: 'var(--color-text-muted)' }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {problem.companies?.map((company) => (
-                        <span
-                          key={company}
-                          className="text-[11px] px-2 py-1 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-400"
-                        >
-                          {company}
-                        </span>
-                      ))}
-                    </div>
+                  {/* AI Quick Actions */}
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => triggerAi('Can you explain this problem to me simply?')}
+                      className="flex-1 group flex items-center justify-center gap-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-300 py-2.5 rounded-xl text-xs font-semibold transition-all"
+                    >
+                      <BookOpen size={14} className="group-hover:scale-110 transition-transform" />{' '}
+                      Explain Problem
+                    </button>
+                    <button
+                      onClick={() =>
+                        triggerAi(
+                          'Can you give me a small hint for this problem without giving away the solution?',
+                        )
+                      }
+                      className="flex-1 group flex items-center justify-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-semibold transition-all"
+                    >
+                      <Lightbulb size={14} className="group-hover:scale-110 transition-transform" />{' '}
+                      Get a Hint
+                    </button>
                   </div>
 
                   {/* Description */}
-                  <div className="prose prose-sm max-w-none" style={{ color: 'var(--color-text)' }}>
+                  <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-white/5 prose-pre:border-white/10 prose-pre:border text-neutral-300 leading-relaxed">
                     <ReactMarkdown>{problem.description}</ReactMarkdown>
                   </div>
 
-                  {/* Function Signature */}
-                  {problem.starterCode && problem.starterCode[language] && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                        Function Signature
-                      </p>
-                      <pre
-                        className="text-xs p-3 rounded-lg border overflow-x-auto"
-                        style={{
-                          background: 'var(--color-surface-2)',
-                          borderColor: 'var(--color-border)',
-                          color: 'var(--color-brand-light)',
-                        }}
-                      >
-                        <code>{problem.starterCode[language]}</code>
-                      </pre>
+                  {/* Technical Details Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Parameters */}
+                    {problem.parameters?.length > 0 && (
+                      <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4">
+                        <div className="flex items-center gap-2 mb-3 text-neutral-200 font-semibold text-sm">
+                          <Code2 size={16} className="text-violet-400" /> Parameters
+                        </div>
+                        <ul className="space-y-3">
+                          {problem.parameters.map((p, i) => (
+                            <li key={i} className="text-xs">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-mono bg-violet-500/20 text-violet-300 px-1.5 py-0.5 rounded border border-violet-500/20">
+                                  {p.name}
+                                </span>
+                                <span className="text-neutral-500 italic">{p.type}</span>
+                              </div>
+                              <span className="text-neutral-400 ml-1">{p.description}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* Return Value */}
+                    {problem.returnValue && (
+                      <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4">
+                        <div className="flex items-center gap-2 mb-3 text-neutral-200 font-semibold text-sm">
+                          <CheckCircle size={16} className="text-emerald-400" /> Returns
+                        </div>
+                        <div className="text-xs">
+                          <span className="font-mono bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/20 block w-max mb-1.5">
+                            {problem.returnValue.type}
+                          </span>
+                          <span className="text-neutral-400 ml-1">
+                            {problem.returnValue.description}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Constraints */}
+                  {problem.constraints && (
+                    <div className="bg-[#1a1525] border border-violet-500/20 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-2 text-violet-300 font-semibold text-sm">
+                        <Info size={16} /> Constraints
+                      </div>
+                      <div className="prose prose-invert prose-sm max-w-none text-[13px] text-violet-200/70 font-mono">
+                        <ReactMarkdown>{problem.constraints}</ReactMarkdown>
+                      </div>
                     </div>
                   )}
+                </motion.div>
+              )}
 
-                  {/* Parameters */}
-                  {problem.parameters?.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                        Parameters
-                      </p>
-                      <ul className="space-y-3">
-                        {problem.parameters.map((p, i) => (
-                          <li key={i} className="text-sm">
-                            <code
-                              className="px-1.5 py-0.5 rounded text-xs bg-white/5 border border-white/10"
-                              style={{ color: 'var(--color-brand-light)' }}
-                            >
-                              {p.name}
-                            </code>
-                            <span
-                              className="text-xs ml-2 italic"
-                              style={{ color: 'var(--color-text-muted)' }}
-                            >
-                              ({p.type})
-                            </span>
-                            <p className="mt-1 ml-1 text-sm" style={{ color: 'var(--color-text)' }}>
-                              {p.description}
-                            </p>
-                          </li>
+              {/* ── TEST CASES TAB ── */}
+              {activeTab === 'testcases' && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col h-full"
+                >
+                  {visibleTestCases.length === 0 ? (
+                    <div className="flex-1 flex items-center justify-center text-neutral-500 text-sm">
+                      All test cases are hidden. Run code to evaluate.
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Sub Tabs */}
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {visibleTestCases.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setSelectedTestCase(i)}
+                            className={cn(
+                              'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap',
+                              selectedTestCase === i
+                                ? 'bg-white/10 text-white shadow-sm'
+                                : 'bg-transparent text-neutral-500 hover:bg-white/5 hover:text-neutral-300',
+                            )}
+                          >
+                            Case {i + 1}
+                          </button>
                         ))}
-                      </ul>
+                      </div>
+
+                      {/* Selected Case View */}
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={selectedTestCase}
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -5 }}
+                          transition={{ duration: 0.15 }}
+                          className="space-y-4"
+                        >
+                          <div>
+                            <div className="text-xs font-semibold text-neutral-400 mb-2 pl-1">
+                              Input
+                            </div>
+                            <pre className="p-4 rounded-xl bg-white/[0.03] border border-white/10 text-neutral-300 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
+                              {visibleTestCases[selectedTestCase].input}
+                            </pre>
+                          </div>
+                          <div>
+                            <div className="text-xs font-semibold text-neutral-400 mb-2 pl-1">
+                              Expected Output
+                            </div>
+                            <pre className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
+                              {visibleTestCases[selectedTestCase].expectedOutput}
+                            </pre>
+                          </div>
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {/* ── RESULTS TAB ── */}
+              {activeTab === 'results' && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col h-full"
+                >
+                  {(running || submitting) && (
+                    <div className="flex flex-col items-center justify-center h-full gap-4 text-neutral-400">
+                      <div className="relative flex items-center justify-center w-16 h-16 bg-violet-500/10 rounded-2xl border border-violet-500/20">
+                        <Loader2 size={28} className="animate-spin text-violet-500" />
+                      </div>
+                      <span className="text-sm font-semibold tracking-wide animate-pulse">
+                        {running ? 'Evaluating Code...' : 'Judging Submission...'}
+                      </span>
                     </div>
                   )}
 
-                  {/* Return Value */}
-                  {problem.returnValue && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                        Returns
-                      </p>
-                      <div className="text-sm">
-                        <code
-                          className="px-1.5 py-0.5 rounded text-xs bg-white/5 border border-white/10"
-                          style={{ color: 'var(--color-brand-light)' }}
-                        >
-                          {problem.returnValue.type}
-                        </code>
-                        <p className="mt-1 ml-1 text-sm" style={{ color: 'var(--color-text)' }}>
-                          {problem.returnValue.description}
+                  {!running && !submitting && !results && (
+                    <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
+                      <Terminal size={48} className="text-neutral-700" />
+                      <div>
+                        <p className="text-neutral-300 font-medium">No Results Yet</p>
+                        <p className="text-xs text-neutral-500 mt-1">
+                          Run your code to compile and evaluate test cases.
                         </p>
                       </div>
                     </div>
                   )}
 
-                  {/* Constraints */}
-                  {problem.constraints && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                        Constraints
-                      </p>
-                      <div
-                        className="prose prose-sm max-w-none text-[13px]"
-                        style={{ color: 'var(--color-text)' }}
-                      >
-                        <ReactMarkdown>{problem.constraints}</ReactMarkdown>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Examples */}
-                  {problem.examples?.length > 0 && (
-                    <div className="space-y-3">
-                      <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                        Examples
-                      </p>
-                      {problem.examples.map((ex, i) => (
-                        <div
-                          key={i}
-                          className="rounded-lg p-3 border text-xs font-mono space-y-1.5"
-                          style={{
-                            background: 'var(--color-surface-2)',
-                            borderColor: 'var(--color-border)',
-                          }}
-                        >
-                          <div>
-                            <span style={{ color: 'var(--color-text-muted)' }}>Input: </span>
-                            <span
-                              style={{ color: 'var(--color-text)' }}
-                              className="whitespace-pre-wrap"
-                            >
-                              {ex.input}
-                            </span>
-                          </div>
-                          <div>
-                            <span style={{ color: 'var(--color-text-muted)' }}>Output: </span>
-                            <span className="text-emerald-500 font-medium">{ex.output}</span>
-                          </div>
-                          {ex.explanation && (
-                            <div
-                              style={{ color: 'var(--color-text-muted)' }}
-                              className="text-[11px]"
-                            >
-                              💡 {ex.explanation}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Constraints */}
-                  {problem.constraints && (
-                    <div
-                      className="rounded-lg p-3 border"
-                      style={{
-                        background: 'var(--color-surface-2)',
-                        borderColor: 'var(--color-border)',
-                      }}
-                    >
-                      <p
-                        className="text-xs font-semibold mb-1.5"
-                        style={{ color: 'var(--color-text)' }}
-                      >
-                        Constraints
-                      </p>
-                      <p
-                        className="text-xs whitespace-pre-line font-mono"
-                        style={{ color: 'var(--color-text-muted)' }}
-                      >
-                        {problem.constraints}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Tags */}
-                  {problem.tags?.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {problem.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-0.5 rounded-full text-xs border"
-                          style={{
-                            color: '#a78bfa',
-                            background: 'rgba(124,58,237,0.1)',
-                            borderColor: 'rgba(124,58,237,0.25)',
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ── TEST CASES TAB ── */}
-              {activeTab === 'testcases' && (
-                <div className="space-y-3">
-                  {visibleTestCases.length === 0 ? (
-                    <p
-                      className="text-sm text-center py-8"
-                      style={{ color: 'var(--color-text-muted)' }}
-                    >
-                      All test cases are hidden. Run your code to see results.
-                    </p>
-                  ) : (
-                    visibleTestCases.map((tc, i) => (
-                      <div
-                        key={i}
-                        className="rounded-lg border overflow-hidden"
-                        style={{ borderColor: 'var(--color-border)' }}
-                      >
-                        <div
-                          className="px-3 py-1.5 text-xs font-medium border-b"
-                          style={{
-                            background: 'var(--color-surface-2)',
-                            borderColor: 'var(--color-border)',
-                            color: 'var(--color-text-muted)',
-                          }}
-                        >
-                          Test Case {i + 1}
-                        </div>
-                        <div
-                          className="p-3 space-y-2 text-xs font-mono"
-                          style={{ background: 'var(--color-surface)' }}
-                        >
-                          <div>
-                            <span
-                              className="text-xs font-sans mb-1 block"
-                              style={{ color: 'var(--color-text-muted)' }}
-                            >
-                              Input
-                            </span>
-                            <pre
-                              className="whitespace-pre-wrap rounded p-2"
-                              style={{
-                                background: 'var(--color-surface-2)',
-                                color: 'var(--color-text)',
-                              }}
-                            >
-                              {tc.input}
-                            </pre>
-                          </div>
-                          <div>
-                            <span
-                              className="text-xs font-sans mb-1 block"
-                              style={{ color: 'var(--color-text-muted)' }}
-                            >
-                              Expected Output
-                            </span>
-                            <pre
-                              className="whitespace-pre-wrap rounded p-2 text-emerald-500"
-                              style={{ background: 'var(--color-surface-2)' }}
-                            >
-                              {tc.expectedOutput}
-                            </pre>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                  {problem.testCases?.some((tc) => tc.isHidden) && (
-                    <p
-                      className="text-xs text-center pt-2"
-                      style={{ color: 'var(--color-text-muted)' }}
-                    >
-                      + {problem.testCases.filter((tc) => tc.isHidden).length} hidden test cases
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* ── RESULTS TAB ── */}
-              {activeTab === 'results' && (
-                <div className="space-y-3">
-                  {(running || submitting) && (
-                    <div
-                      className="flex items-center justify-center gap-2 py-10 text-sm"
-                      style={{ color: 'var(--color-text-muted)' }}
-                    >
-                      <Loader2 size={18} className="animate-spin text-violet-500" />
-                      {running ? 'Running test cases…' : 'Submitting solution…'}
-                    </div>
-                  )}
-                  {!running && !submitting && !results && (
-                    <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-                      <Terminal
-                        size={32}
-                        style={{ color: 'var(--color-text-muted)', opacity: 0.4 }}
-                      />
-                      <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                        Run your code to see test results here.
-                      </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: 'var(--color-text-muted)', opacity: 0.7 }}
-                      >
-                        JavaScript and Python work without Docker.
-                      </p>
-                    </div>
-                  )}
                   {!running && !submitting && results && (
-                    <>
-                      {/* Summary */}
+                    <div className="space-y-6">
+                      {/* Result Header */}
                       <div
-                        className="flex items-center gap-3 rounded-lg p-3 border"
-                        style={{
-                          background: allPassed ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
-                          borderColor: allPassed ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)',
-                        }}
-                      >
-                        {allPassed ? (
-                          <CheckCircle size={18} className="text-emerald-500 shrink-0" />
-                        ) : (
-                          <XCircle size={18} className="text-red-500 shrink-0" />
+                        className={cn(
+                          'flex items-center gap-4 p-4 rounded-2xl border backdrop-blur-md',
+                          allPassed
+                            ? 'bg-emerald-500/10 border-emerald-500/20'
+                            : 'bg-rose-500/10 border-rose-500/20',
                         )}
+                      >
+                        <div
+                          className={cn(
+                            'p-2 rounded-full',
+                            allPassed
+                              ? 'bg-emerald-500/20 text-emerald-400'
+                              : 'bg-rose-500/20 text-rose-400',
+                          )}
+                        >
+                          {allPassed ? <CheckCircle size={24} /> : <XCircle size={24} />}
+                        </div>
                         <div>
-                          <p
-                            className="text-sm font-medium"
-                            style={{ color: allPassed ? '#34d399' : '#f87171' }}
+                          <h2
+                            className={cn(
+                              'text-lg font-bold',
+                              allPassed ? 'text-emerald-400' : 'text-rose-400',
+                            )}
                           >
-                            {allPassed
-                              ? 'All tests passed!'
-                              : `${passedCount}/${results.length} tests passed`}
+                            {allPassed ? 'Accepted!' : 'Wrong Answer'}
+                          </h2>
+                          <p className="text-sm text-neutral-400 mt-0.5">
+                            {passedCount} / {results.length} testcases passed
                           </p>
                         </div>
                       </div>
 
-                      {/* Individual results */}
-                      {results.map((r, i) => (
-                        <div
-                          key={i}
-                          className="rounded-lg border overflow-hidden"
-                          style={{
-                            borderColor: r.passed
-                              ? 'rgba(16,185,129,0.25)'
-                              : 'rgba(239,68,68,0.25)',
-                          }}
-                        >
-                          <div
-                            className="flex items-center justify-between px-3 py-2"
-                            style={{
-                              background: r.passed
-                                ? 'rgba(16,185,129,0.08)'
-                                : 'rgba(239,68,68,0.08)',
-                            }}
-                          >
-                            <div className="flex items-center gap-2 text-xs font-medium">
-                              {r.passed ? (
-                                <CheckCircle size={13} className="text-emerald-500" />
-                              ) : (
-                                <XCircle size={13} className="text-red-400" />
-                              )}
-                              <span style={{ color: r.passed ? '#34d399' : '#f87171' }}>
-                                Test {i + 1}: {r.passed ? 'Passed' : 'Failed'}
-                              </span>
-                            </div>
-                            {r.runtime > 0 && (
-                              <span
-                                className="text-xs"
-                                style={{ color: 'var(--color-text-muted)' }}
-                              >
-                                {(r.runtime * 1000).toFixed(0)}ms
-                              </span>
+                      {/* Sub Tabs for Results */}
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {results.map((r, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setSelectedResultCase(i)}
+                            className={cn(
+                              'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 border',
+                              selectedResultCase === i
+                                ? r.passed
+                                  ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
+                                  : 'bg-rose-500/20 border-rose-500/30 text-rose-300'
+                                : 'bg-white/5 border-transparent text-neutral-500 hover:bg-white/10',
                             )}
-                          </div>
-
-                          {!r.passed && (
+                          >
                             <div
-                              className="p-3 text-xs font-mono space-y-2"
-                              style={{
-                                background: 'var(--color-surface)',
-                                color: 'var(--color-text)',
-                              }}
-                            >
-                              {r.error ? (
-                                <div
-                                  className="rounded p-2 border flex gap-2"
-                                  style={{
-                                    background: 'rgba(239,68,68,0.06)',
-                                    borderColor: 'rgba(239,68,68,0.2)',
-                                  }}
-                                >
-                                  <AlertTriangle
-                                    size={12}
-                                    className="text-red-400 shrink-0 mt-0.5"
-                                  />
-                                  <span className="text-red-400 whitespace-pre-wrap">
-                                    {r.error}
-                                  </span>
+                              className={cn(
+                                'w-1.5 h-1.5 rounded-full',
+                                r.passed ? 'bg-emerald-500' : 'bg-rose-500',
+                              )}
+                            />
+                            Case {i + 1}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Selected Result View */}
+                      {results[selectedResultCase] && (
+                        <AnimatePresence mode="wait">
+                          <motion.div
+                            key={selectedResultCase}
+                            initial={{ opacity: 0, y: 5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -5 }}
+                            transition={{ duration: 0.15 }}
+                            className="space-y-4"
+                          >
+                            {results[selectedResultCase].error ? (
+                              <div className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4">
+                                <div className="flex items-center gap-2 text-rose-400 font-bold text-sm mb-2">
+                                  <AlertTriangle size={16} /> Compilation / Runtime Error
                                 </div>
-                              ) : (
-                                <>
-                                  {r.input !== '(hidden)' && (
+                                <pre className="text-rose-300/80 font-mono text-xs whitespace-pre-wrap">
+                                  {results[selectedResultCase].error}
+                                </pre>
+                              </div>
+                            ) : (
+                              <>
+                                {results[selectedResultCase].input !== '(hidden)' && (
+                                  <div>
+                                    <div className="text-xs font-semibold text-neutral-400 mb-2 pl-1">
+                                      Input
+                                    </div>
+                                    <pre className="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-neutral-300 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
+                                      {results[selectedResultCase].input}
+                                    </pre>
+                                  </div>
+                                )}
+                                <div className="grid grid-cols-1 gap-4">
+                                  <div>
+                                    <div className="text-xs font-semibold text-neutral-400 mb-2 pl-1">
+                                      Expected Output
+                                    </div>
+                                    <pre className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
+                                      {results[selectedResultCase].expected}
+                                    </pre>
+                                  </div>
+                                  {!results[selectedResultCase].passed && (
                                     <div>
-                                      <span style={{ color: 'var(--color-text-muted)' }}>
-                                        Input:{' '}
-                                      </span>
-                                      <span className="whitespace-pre-wrap">{r.input}</span>
+                                      <div className="text-xs font-semibold text-rose-400 mb-2 pl-1">
+                                        Actual Output
+                                      </div>
+                                      <pre className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
+                                        {results[selectedResultCase].actual || '(no output)'}
+                                      </pre>
                                     </div>
                                   )}
-                                  <div>
-                                    <span style={{ color: 'var(--color-text-muted)' }}>
-                                      Expected:{' '}
-                                    </span>
-                                    <span className="text-emerald-500">{r.expected}</span>
-                                  </div>
-                                  <div>
-                                    <span style={{ color: 'var(--color-text-muted)' }}>Got: </span>
-                                    <span className="text-red-400">
-                                      {r.actual || '(no output)'}
-                                    </span>
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </>
+                                </div>
+                              </>
+                            )}
+                          </motion.div>
+                        </AnimatePresence>
+                      )}
+                    </div>
                   )}
-                </div>
+                </motion.div>
               )}
 
-              {/* ── AI EXPLANATION TAB ── */}
-              {activeTab === 'ai-explain' && (
-                <div className="space-y-4">
-                  <h2 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                    AI Explanation
-                  </h2>
-                  <div
-                    className="prose prose-sm max-w-none text-[13px]"
-                    style={{ color: 'var(--color-text-muted)' }}
-                  >
-                    <p>
-                      Coming soon: The AI will explain what this problem is asking, its real-world
-                      analogy, and inputs/outputs.
-                    </p>
+              {/* ── AI SOLUTIONS TAB ── */}
+              {activeTab === 'ai' && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="space-y-6 pb-8"
+                >
+                  <div className="flex items-center gap-3 p-4 bg-violet-500/10 border border-violet-500/20 rounded-xl">
+                    <div className="w-10 h-10 bg-violet-500/20 rounded-full flex items-center justify-center">
+                      <Bot className="text-violet-400" size={20} />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-bold text-violet-300">AI Verified Approaches</h2>
+                      <p className="text-xs text-violet-300/70">
+                        Review these standard approaches if you are stuck.
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {/* ── AI HINTS TAB ── */}
-              {activeTab === 'ai-hint' && (
-                <div className="space-y-4">
-                  <h2 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                    Progressive Hints
-                  </h2>
-                  <div
-                    className="prose prose-sm max-w-none text-[13px]"
-                    style={{ color: 'var(--color-text-muted)' }}
-                  >
-                    <p>Coming soon: Request progressive hints without revealing the solution.</p>
-                  </div>
-                </div>
-              )}
-
-              {/* ── AI SOLUTION TAB ── */}
-              {activeTab === 'ai-solution' && (
-                <div className="space-y-6">
-                  <h2 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                    AI Solutions
-                  </h2>
 
                   {!problem.aiSolutions ? (
-                    <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                    <div className="text-center py-10 text-neutral-500 text-sm">
                       No solutions generated for this problem yet.
                     </div>
                   ) : (
                     <div className="space-y-8">
                       {problem.aiSolutions?.bruteForce && (
-                        <div className="space-y-2">
-                          <h3 className="text-[13px] font-bold text-orange-400">
-                            1. Brute Force Approach
+                        <div className="space-y-3">
+                          <h3 className="text-sm font-bold text-orange-400 flex items-center gap-2">
+                            <span className="w-5 h-5 rounded bg-orange-500/20 flex items-center justify-center text-[10px]">
+                              1
+                            </span>{' '}
+                            Brute Force
                           </h3>
-                          <div
-                            className="prose prose-sm max-w-none text-[13px]"
-                            style={{ color: 'var(--color-text)' }}
-                          >
+                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-white/5 prose-pre:border-white/10 prose-pre:border text-neutral-300">
                             <ReactMarkdown>{problem.aiSolutions.bruteForce}</ReactMarkdown>
                           </div>
                         </div>
                       )}
+
                       {problem.aiSolutions?.better && (
-                        <div className="space-y-2">
-                          <h3 className="text-[13px] font-bold text-blue-400">
-                            2. Better Approach
+                        <div className="space-y-3">
+                          <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
+                            <span className="w-5 h-5 rounded bg-blue-500/20 flex items-center justify-center text-[10px]">
+                              2
+                            </span>{' '}
+                            Better Approach
                           </h3>
-                          <div
-                            className="prose prose-sm max-w-none text-[13px]"
-                            style={{ color: 'var(--color-text)' }}
-                          >
+                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-white/5 prose-pre:border-white/10 prose-pre:border text-neutral-300">
                             <ReactMarkdown>{problem.aiSolutions.better}</ReactMarkdown>
                           </div>
                         </div>
                       )}
+
                       {problem.aiSolutions?.optimal && (
-                        <div className="space-y-2">
-                          <h3 className="text-[13px] font-bold text-emerald-400">
-                            3. Optimal Approach
+                        <div className="space-y-3">
+                          <h3 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                            <span className="w-5 h-5 rounded bg-emerald-500/20 flex items-center justify-center text-[10px]">
+                              3
+                            </span>{' '}
+                            Optimal Approach
                           </h3>
-                          <div
-                            className="prose prose-sm max-w-none text-[13px]"
-                            style={{ color: 'var(--color-text)' }}
-                          >
+                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-white/5 prose-pre:border-white/10 prose-pre:border text-neutral-300">
                             <ReactMarkdown>{problem.aiSolutions.optimal}</ReactMarkdown>
                           </div>
                         </div>
                       )}
                     </div>
                   )}
-                </div>
+                </motion.div>
               )}
             </div>
           </div>
         </Allotment.Pane>
+
         <Allotment.Pane minSize={400}>
           {/* ── RIGHT PANEL: Editor ── */}
-          <div
-            className="flex flex-col rounded-xl border overflow-hidden"
-            style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface)' }}
-          >
+          <div className="flex flex-col h-full rounded-xl border border-white/10 bg-[#0f0f11] overflow-hidden ml-1 shadow-2xl relative group">
             {/* Toolbar */}
-            <div
-              className="flex items-center justify-between px-4 py-2 border-b shrink-0"
-              style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface-2)' }}
-            >
-              <div className="flex gap-1">
+            <div className="absolute top-4 right-6 left-6 z-10 flex items-center justify-between px-3 py-2 bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl opacity-20 hover:opacity-100 transition-opacity duration-300">
+              <div className="flex bg-black/50 p-1 rounded-xl">
                 {Object.keys(DEFAULT_CODE).map((lang) => (
                   <button
                     key={lang}
                     onClick={() => switchLanguage(lang)}
-                    className="px-3 py-1 rounded text-xs font-medium transition-all"
-                    style={{
-                      background: language === lang ? 'rgba(124,58,237,0.2)' : 'transparent',
-                      color: language === lang ? '#a78bfa' : 'var(--color-text-muted)',
-                      border:
-                        language === lang
-                          ? '1px solid rgba(124,58,237,0.4)'
-                          : '1px solid transparent',
-                    }}
+                    className={cn(
+                      'px-3 py-1.5 rounded-lg text-xs font-bold transition-all relative',
+                      language === lang ? 'text-white' : 'text-neutral-500 hover:text-neutral-300',
+                    )}
                   >
-                    {LANG_LABELS[lang]}
+                    {language === lang && (
+                      <motion.div
+                        layoutId="active-lang"
+                        className="absolute inset-0 bg-white/10 rounded-lg shadow-sm"
+                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    <span className="relative z-10">{LANG_LABELS[lang]}</span>
                   </button>
                 ))}
               </div>
+
               <div className="flex gap-2">
                 <button
                   onClick={handleResetCode}
                   disabled={running || submitting}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50 hover:bg-white/5"
-                  style={{ color: 'var(--color-text-muted)' }}
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all disabled:opacity-50"
                   title="Reset Code"
                 >
-                  <RotateCcw size={13} />
+                  <RotateCcw size={16} />
                 </button>
                 <button
-                  onClick={() => setAiOpen(!aiOpen)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all hover:bg-white/5"
-                  style={{ color: '#10b981' }}
+                  onClick={() => triggerAi('')}
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 text-violet-300 font-bold text-xs transition-all"
                 >
-                  <Bot size={13} />
-                  AI Helper
+                  <Bot size={14} /> AI
                 </button>
                 <button
                   onClick={handleRun}
                   disabled={running || submitting}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
-                  style={{
-                    background: 'var(--color-surface-3)',
-                    border: '1px solid var(--color-border)',
-                    color: 'var(--color-text)',
-                  }}
+                  className="flex items-center gap-2 px-5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all disabled:opacity-50"
                 >
-                  {running ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}
+                  {running ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Play size={14} fill="currentColor" />
+                  )}
                   Run
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={running || submitting}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-white transition-all disabled:opacity-50"
-                  style={{ background: '#7c3aed' }}
-                  onMouseEnter={(e) =>
-                    !e.currentTarget.disabled && (e.currentTarget.style.background = '#6d28d9')
-                  }
-                  onMouseLeave={(e) => (e.currentTarget.style.background = '#7c3aed')}
+                  className="flex items-center gap-2 px-5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 shadow-[0_0_15px_rgba(16,185,129,0.4)] font-bold text-xs transition-all disabled:opacity-50"
                 >
-                  {submitting ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
+                  {submitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                   Submit
                 </button>
               </div>
             </div>
 
             {/* Monaco Editor */}
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 w-full h-full pt-16 pb-12 bg-[#0f0f11]">
               <Editor
                 height="100%"
                 language={language === 'cpp' ? 'cpp' : language}
-                theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                theme="vs-dark"
                 value={code}
                 onChange={(v) => setCode(v ?? '')}
                 options={{
-                  fontSize: 13,
+                  fontSize: 14,
                   minimap: { enabled: false },
                   automaticLayout: true,
                   scrollBeyondLastLine: false,
                   lineNumbers: 'on',
-                  renderLineHighlight: 'line',
+                  renderLineHighlight: 'all',
                   bracketPairColorization: { enabled: true },
-                  padding: { top: 10, bottom: 10 },
-                  fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+                  padding: { top: 20, bottom: 20 },
+                  fontFamily: '"JetBrains Mono", "Fira Code", "Menlo", monospace',
                   fontLigatures: true,
+                  cursorBlinking: 'smooth',
+                  smoothScrolling: true,
+                  scrollbar: {
+                    verticalScrollbarSize: 8,
+                    horizontalScrollbarSize: 8,
+                  },
                 }}
               />
             </div>
 
             {/* Status bar */}
-            <div
-              className="px-4 py-1.5 border-t flex items-center gap-3 shrink-0"
-              style={{ borderColor: 'var(--color-border)', background: 'var(--color-surface-2)' }}
-            >
-              <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                {LANG_LABELS[language]}
-              </span>
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-2 bg-[#0f0f11]/90 backdrop-blur border-t border-white/10 flex items-center justify-between text-[11px] text-neutral-500 font-mono">
+              <div className="flex gap-4">
+                <span className="flex items-center gap-1.5">
+                  <Code2 size={12} /> {LANG_LABELS[language]}{' '}
+                </span>
+                <span>UTF-8</span>
+              </div>
 
               {results && (
-                <span
-                  className={`ml-auto text-xs font-medium ${allPassed ? 'text-emerald-500' : 'text-red-400'}`}
-                >
-                  {passedCount}/{results.length} passed
+                <span className={cn('font-bold', allPassed ? 'text-emerald-500' : 'text-rose-400')}>
+                  {passedCount}/{results.length} PASSED
                 </span>
               )}
             </div>
@@ -882,6 +777,7 @@ export const ProblemDetail = () => {
         language={language}
         isOpen={aiOpen}
         onClose={() => setAiOpen(false)}
+        initialMessage={initialAiMessage}
       />
     </div>
   );

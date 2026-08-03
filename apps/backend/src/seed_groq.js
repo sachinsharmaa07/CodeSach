@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { Problem } from './models/problem.model.js';
 import dotenv from 'dotenv';
 import { generateProblemDetails } from './services/ai.service.js';
+import { harnessGenerator } from './services/harnessGenerator.service.js';
 
 // Setup environment and database
 dotenv.config({ path: '../../.env' });
@@ -43,11 +44,18 @@ async function seedMissingGroqDetails() {
         p.description = details.description || p.description;
         p.testCases =
           details.testCases && details.testCases.length > 0 ? details.testCases : p.testCases;
-        if (details.starterCode) p.starterCode = details.starterCode;
-        if (details.harness) p.harness = details.harness;
         if (details.parameters) p.parameters = details.parameters;
         if (details.returnValue) p.returnValue = details.returnValue;
         if (details.aiSolutions) p.aiSolutions = details.aiSolutions;
+
+        // Use our deterministic code generator instead of relying on AI hallucinations
+        const { starterCode, harness } = harnessGenerator.generate(
+          p.title,
+          p.parameters,
+          p.returnValue,
+        );
+        p.starterCode = starterCode;
+        p.harness = harness;
 
         await p.save();
         console.log(`✅ Successfully updated ${p.title}`);

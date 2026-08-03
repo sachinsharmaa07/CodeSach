@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import { Problem } from './models/problem.model.js';
 import { User } from './models/user.model.js';
-import dotenv from 'dotenv';
-dotenv.config({ path: '../../.env' });
+import { env } from './config/env.js';
+import { harnessGenerator } from './services/harnessGenerator.service.js';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://mongodb:27017/codesach';
+const MONGODB_URI = env.MONGODB_URI || 'mongodb://mongodb:27017/codesach';
 
 const rawData = `
 Arrays & Hashing
@@ -330,6 +330,46 @@ async function seed() {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '');
 
+      let params = [{ name: 'input', type: 'string', description: 'Standard string input' }];
+      let retVal = { type: 'string', description: 'Standard string output' };
+      let tc = [
+        {
+          input: '"test_input"',
+          expectedOutput: '"test_output"',
+          isHidden: false,
+        },
+      ];
+
+      if (title === 'Two Sum') {
+        params = [
+          { name: 'nums', type: 'integer array', description: 'Input array containing integers' },
+          { name: 'target', type: 'integer', description: 'Target sum' },
+        ];
+        retVal = { type: 'integer array', description: 'Indices of the two numbers' };
+        tc = [
+          { input: '[2,7,11,15]\\n9', expectedOutput: '[0,1]', isHidden: false },
+          { input: '[3,2,4]\\n6', expectedOutput: '[1,2]', isHidden: false },
+          { input: '[3,3]\\n6', expectedOutput: '[0,1]', isHidden: true },
+        ];
+      } else if (title === 'Reverse String') {
+        params = [{ name: 's', type: 'string array', description: 'Array of characters' }];
+        retVal = { type: 'string array', description: 'Reversed array of characters' };
+        tc = [
+          {
+            input: '["h","e","l","l","o"]',
+            expectedOutput: '["o","l","l","e","h"]',
+            isHidden: false,
+          },
+          {
+            input: '["H","a","n","n","a","h"]',
+            expectedOutput: '["h","a","n","n","a","H"]',
+            isHidden: true,
+          },
+        ];
+      }
+
+      const { starterCode, harness } = harnessGenerator.generate(title, params, retVal);
+
       problems.push({
         title,
         slug,
@@ -338,32 +378,16 @@ async function seed() {
         category: currentCategory,
         tags: [currentCategory],
         marks: 10,
-        testCases: [
-          {
-            input: 'test_input',
-            expectedOutput: 'test_output',
-            isHidden: false,
-          },
-        ],
-        parameters: [{ name: 'input', type: 'string', description: 'Standard string input' }],
-        returnValue: { type: 'string', description: 'Standard string output' },
+        testCases: tc,
+        parameters: params,
+        returnValue: retVal,
         aiSolutions: {
           bruteForce: 'Brute force solution explanation will go here.',
           better: 'Better solution explanation will go here.',
           optimal: 'Optimal solution explanation will go here.',
         },
-        starterCode: {
-          javascript: `function solution(input) {\n  // Write your code here\n  return "test_output";\n}`,
-          java: `class Solution {\n    public String solution(String input) {\n        // Write your code here\n        return "test_output";\n    }\n}`,
-          cpp: `class Solution {\npublic:\n    string solution(string input) {\n        // Write your code here\n        return "test_output";\n    }\n};`,
-          c: `char* solution(const char* input) {\n    // Write your code here\n    return strdup("test_output");\n}`,
-        },
-        harness: {
-          javascript: `const fs = require('fs');\n{{USER_CODE}}\nconst input = fs.readFileSync(0, 'utf-8').trim();\nconsole.log(solution(input));`,
-          java: `import java.util.*;\n{{USER_CODE}}\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if(sc.hasNext()) {\n            System.out.println(new Solution().solution(sc.next()));\n        }\n    }\n}`,
-          cpp: `#include <iostream>\n#include <string>\nusing namespace std;\n{{USER_CODE}}\nint main() {\n    string s;\n    if(cin >> s) {\n        Solution sol;\n        cout << sol.solution(s) << endl;\n    }\n    return 0;\n}`,
-          c: `#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n{{USER_CODE}}\nint main() {\n    char input[1024];\n    if (scanf("%1023s", input) == 1) {\n        char* res = solution(input);\n        if (res) {\n            printf("%s\\n", res);\n            free(res);\n        }\n    }\n    return 0;\n}`,
-        },
+        starterCode,
+        harness,
         createdBy: admin._id,
       });
     }

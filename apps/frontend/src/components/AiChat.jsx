@@ -5,11 +5,18 @@ import ReactMarkdown from 'react-markdown';
 import api from '../lib/axios';
 import { toast } from 'sonner';
 
-export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose }) => {
+export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose, initialMessage }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
+
+  // Auto-send initial message if provided and chat is opened
+  useEffect(() => {
+    if (isOpen && initialMessage) {
+      handleSend(initialMessage);
+    }
+  }, [isOpen, initialMessage]);
 
   useEffect(() => {
     if (isOpen) {
@@ -17,11 +24,13 @@ export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose }) =>
     }
   }, [messages, isOpen]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const handleSend = async (messageOverride = null) => {
+    const userMsg = typeof messageOverride === 'string' ? messageOverride.trim() : input.trim();
+    if (!userMsg) return;
 
-    const userMsg = input.trim();
-    setInput('');
+    if (typeof messageOverride !== 'string') {
+      setInput('');
+    }
     setMessages((prev) => [...prev, { role: 'user', content: userMsg }]);
     setLoading(true);
 
@@ -174,7 +183,7 @@ export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose }) =>
                 disabled={loading}
               />
               <button
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 disabled={!input.trim() || loading}
                 className="p-2 rounded-lg bg-emerald-500 text-white disabled:opacity-50 hover:bg-emerald-600 transition-colors"
               >
