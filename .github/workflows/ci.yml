@@ -99,6 +99,20 @@ jobs:
             version: '3.8'
 
             services:
+              caddy:
+                image: caddy:latest
+                container_name: codesach_caddy
+                ports:
+                  - "80:80"
+                  - "443:443"
+                volumes:
+                  - ./Caddyfile:/etc/caddy/Caddyfile
+                  - caddy_data:/data
+                  - caddy_config:/config
+                restart: unless-stopped
+                depends_on:
+                  - frontend
+
               mongodb:
                 image: mongo:latest
                 container_name: codesach_mongo
@@ -111,8 +125,6 @@ jobs:
               backend:
                 image: ${{ secrets.DOCKER_USERNAME }}/codesach-backend:latest
                 container_name: codesach_backend
-                ports:
-                  - "5001:5000"
                 env_file:
                   - .env
                 depends_on:
@@ -122,14 +134,21 @@ jobs:
               frontend:
                 image: ${{ secrets.DOCKER_USERNAME }}/codesach-frontend:latest
                 container_name: codesach_frontend
-                ports:
-                  - "80:80"
                 depends_on:
                   - backend
                 restart: unless-stopped
 
             volumes:
               mongodb_data:
+              caddy_data:
+              caddy_config:
+            EOF
+
+            # Write the Caddyfile
+            cat << 'EOF' > Caddyfile
+            codesach.duckdns.org {
+              reverse_proxy frontend:80
+            }
             EOF
 
             # Pull latest images and restart containers
