@@ -1,18 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import {
   Play,
   Send,
-  Sparkles,
   Loader2,
-  Lightbulb,
-  BookOpen,
   CheckCircle,
   XCircle,
-  ChevronDown,
-  ChevronUp,
-  MessageSquare,
   Code2,
   AlertTriangle,
   Terminal,
@@ -75,11 +69,6 @@ export const ProblemDetail = () => {
       .catch(() => toast.error('Failed to load problem'))
       .finally(() => setLoading(false));
   }, [slug]);
-
-  // Auto-scroll chat
-  useEffect(() => {
-    if (aiOpen) chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [aiMsgs, aiLoading, aiOpen]);
 
   const switchLanguage = (lang) => {
     setLanguage(lang);

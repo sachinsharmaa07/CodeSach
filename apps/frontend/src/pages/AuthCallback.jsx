@@ -28,7 +28,7 @@ export const AuthCallback = () => {
       toast.error('Something went wrong. Please try again.');
       navigate('/login');
     }
-  }, []);
+  }, [navigate, setAuth]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -36,6 +36,6 @@ export const AuthCallback = () => {
         <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
         <p className="text-neutral-400 text-sm">Signing you in...</p>
       </div>
-    </div>);
-
+    </div>
+  );
 };

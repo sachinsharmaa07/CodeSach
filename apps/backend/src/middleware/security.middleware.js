@@ -1,6 +1,5 @@
 import helmet from 'helmet';
 import hpp from 'hpp';
-import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 
 export const helmetMiddleware = helmet();

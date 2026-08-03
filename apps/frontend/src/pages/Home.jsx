@@ -7,7 +7,6 @@ import {
   Zap,
   Trophy,
   Bot,
-  Send,
   Search,
   X,
   Loader2,

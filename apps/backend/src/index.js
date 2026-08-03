@@ -6,7 +6,12 @@ import compression from 'compression';
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
 import { errorHandler } from './middleware/error.middleware.js';
-import { helmetMiddleware, sanitizeMiddleware, hppMiddleware, apiLimiter } from './middleware/security.middleware.js';
+import {
+  helmetMiddleware,
+  sanitizeMiddleware,
+  hppMiddleware,
+  apiLimiter,
+} from './middleware/security.middleware.js';
 import routes from './routes/index.js';
 import './config/passport.js';
 
@@ -26,5 +31,5 @@ app.use('/api/v1', routes);
 app.use(errorHandler);
 
 connectDB().then(() => {
-  app.listen(env.PORT, '0.0.0.0', () => console.log(`🚀 Server running on port ${env.PORT}`));
+  app.listen(env.PORT, '0.0.0.0', () => console.info(`🚀 Server running on port ${env.PORT}`));
 });
