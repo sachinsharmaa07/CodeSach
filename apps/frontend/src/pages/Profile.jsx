@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Flame, Trophy, CheckCircle2 } from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import api from '@/lib/axios';
 import { useAuthStore } from '@/store/auth.store';
 
@@ -61,87 +70,78 @@ export const Profile = () => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-5 overflow-hidden">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-5">
         <h2 className="text-sm font-medium text-neutral-900 dark:text-white mb-4">
-          Activity (Last Year)
+          Activity (Last 30 Days)
         </h2>
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          <div className="flex flex-col gap-2 pt-6 shrink-0 text-xs text-neutral-700 dark:text-neutral-500 font-medium">
-            <span className="h-3 leading-3">Mon</span>
-            <span className="h-3 leading-3 mt-3">Wed</span>
-            <span className="h-3 leading-3 mt-3">Fri</span>
-          </div>
-          <div className="flex-1 min-w-max">
-            {(() => {
-              const today = new Date();
-              const days = [];
-              for (let i = 364; i >= 0; i--) {
-                const d = new Date(today);
-                d.setDate(today.getDate() - i);
-                days.push(d);
-              }
-              const firstDayOffset = days[0].getDay();
-              const emptyStartDays = Array(firstDayOffset).fill(null);
-              const allCells = [...emptyStartDays, ...days];
-
-              // Generate month labels
-              const months = [];
-              let currentMonth = -1;
-              allCells.forEach((d, i) => {
-                if (i % 7 !== 0 || !d) return; // Only check the first day of each column
-                if (d.getMonth() !== currentMonth) {
-                  months.push({
-                    name: d.toLocaleString('default', { month: 'short' }),
-                    colIndex: i / 7,
-                  });
-                  currentMonth = d.getMonth();
-                }
+        <div className="h-[250px] w-full">
+          {(() => {
+            const chartData = [];
+            const today = new Date();
+            for (let i = 29; i >= 0; i--) {
+              const d = new Date(today);
+              d.setDate(today.getDate() - i);
+              const dateStr = d.toISOString().slice(0, 10);
+              const count =
+                (profile?.dailyActivity || []).find((a) => a.date === dateStr)?.count || 0;
+              chartData.push({
+                date: d.toLocaleDateString('default', { month: 'short', day: 'numeric' }),
+                submissions: count,
               });
-
-              return (
-                <div className="flex flex-col gap-2">
-                  <div className="flex relative h-4 text-xs text-neutral-700 dark:text-neutral-500 font-medium">
-                    {months.map((m, idx) => (
-                      <span key={idx} className="absolute" style={{ left: `${m.colIndex * 16}px` }}>
-                        {m.name}
-                      </span>
-                    ))}
-                  </div>
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateRows: 'repeat(7, 1fr)',
-                      gridAutoFlow: 'column',
-                      gap: '4px',
+            }
+            return (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorSubmissions" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="rgba(255,255,255,0.05)"
+                    className="dark:stroke-white/5 stroke-black/5"
+                  />
+                  <XAxis
+                    dataKey="date"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12 }}
+                    className="dark:fill-neutral-500 fill-neutral-400"
+                    minTickGap={20}
+                  />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fontSize: 12 }}
+                    allowDecimals={false}
+                    className="dark:fill-neutral-500 fill-neutral-400"
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(23,23,23,0.9)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '8px',
+                      color: '#fff',
                     }}
-                  >
-                    {allCells.map((d, i) => {
-                      if (!d)
-                        return (
-                          <div key={`empty-${i}`} className="w-3 h-3 bg-transparent rounded-sm" />
-                        );
-                      const dateStr = d.toISOString().slice(0, 10);
-                      const count =
-                        (profile?.dailyActivity || []).find((a) => a.date === dateStr)?.count || 0;
-                      let bg = 'bg-white/[0.04] border border-white/5';
-                      if (count === 1) bg = 'bg-violet-900/60 border border-violet-800/50';
-                      else if (count === 2) bg = 'bg-violet-700/80 border border-violet-600';
-                      else if (count === 3) bg = 'bg-violet-500 border border-violet-400';
-                      else if (count >= 4) bg = 'bg-violet-400 border border-violet-300';
-
-                      return (
-                        <div
-                          key={dateStr}
-                          className={`w-3 h-3 rounded-sm transition-colors hover:border-white ${bg}`}
-                          title={`${dateStr}: ${count} submissions`}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
+                    itemStyle={{ color: '#fff' }}
+                    labelStyle={{ color: '#a3a3a3', marginBottom: '4px' }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="submissions"
+                    stroke="#8b5cf6"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#colorSubmissions)"
+                    activeDot={{ r: 6, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 2 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            );
+          })()}
         </div>
       </div>
     </div>
