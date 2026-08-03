@@ -11,6 +11,7 @@ import {
   AlertTriangle,
   Terminal,
   RotateCcw,
+  Bot,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
