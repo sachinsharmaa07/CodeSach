@@ -239,7 +239,6 @@ function runLocal(language, fullCode, stdin) {
             stderr: `Language "${language}" is not supported.`,
             status: { id: 13, description: 'Internal Error' },
             time: '0',
-            _noDocker: true,
           });
         }
       } catch (err) {
@@ -318,9 +317,7 @@ export const judge0Service = {
       let passed = false;
       let error = null;
 
-      if (result._noDocker) {
-        error = `⚠️ ${language.toUpperCase()} requires Docker/Judge0. Switch to JavaScript or Python.`;
-      } else if (sid === 3) {
+      if (sid === 3) {
         passed = actual === expected;
         // No error msg when it's just wrong answer — show diff instead
       } else {

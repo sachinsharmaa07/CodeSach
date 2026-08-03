@@ -873,13 +873,7 @@ export const ProblemDetail = () => {
               <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 {LANG_LABELS[language]}
               </span>
-              {(language === 'cpp' || language === 'java') && (
-                <span className="text-xs flex items-center gap-1" style={{ color: '#f59e0b' }}>
-                  <AlertTriangle size={10} />
-                  Requires Docker for {language === 'cpp' ? 'C++' : 'Java'}. Use JS/Python for local
-                  runs.
-                </span>
-              )}
+
               {results && (
                 <span
                   className={`ml-auto text-xs font-medium ${allPassed ? 'text-emerald-500' : 'text-red-400'}`}
