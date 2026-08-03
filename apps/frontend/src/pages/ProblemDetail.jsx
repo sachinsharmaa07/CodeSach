@@ -58,9 +58,11 @@ export const ProblemDetail = () => {
   const [selectedTestCase, setSelectedTestCase] = useState(0);
   const [selectedResultCase, setSelectedResultCase] = useState(0);
 
-  // AI Chat
+  // AI Chat & Solutions
   const [aiOpen, setAiOpen] = useState(false);
   const [initialAiMessage, setInitialAiMessage] = useState('');
+  const [generatingSolution, setGeneratingSolution] = useState(false);
+  const [generatedSolution, setGeneratedSolution] = useState(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -148,6 +150,25 @@ export const ProblemDetail = () => {
   const triggerAi = (msg) => {
     setInitialAiMessage(msg);
     setAiOpen(true);
+  };
+
+  const handleGenerateSolution = async () => {
+    if (!problem) return;
+    setActiveTab('ai');
+    if (problem.aiSolutions || generatedSolution) return; // already have a solution
+
+    setGeneratingSolution(true);
+    try {
+      const res = await api.post('/ai/solution', {
+        problemTitle: problem.title,
+        language: language,
+      });
+      setGeneratedSolution(res.data.data.reply);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to generate solution');
+    } finally {
+      setGeneratingSolution(false);
+    }
   };
 
   if (loading)
@@ -300,6 +321,13 @@ export const ProblemDetail = () => {
                     >
                       <Lightbulb size={14} className="group-hover:scale-110 transition-transform" />{' '}
                       Get a Hint
+                    </button>
+                    <button
+                      onClick={handleGenerateSolution}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold transition-all group"
+                    >
+                      <Bot size={14} className="group-hover:scale-110 transition-transform" />{' '}
+                      Solution
                     </button>
                   </div>
 
@@ -598,16 +626,42 @@ export const ProblemDetail = () => {
                       <Bot className="text-violet-400" size={20} />
                     </div>
                     <div>
-                      <h2 className="text-sm font-bold text-violet-300">AI Verified Approaches</h2>
+                      <h2 className="text-sm font-bold text-violet-300">AI Verified Solutions</h2>
                       <p className="text-xs text-violet-300/70">
-                        Review these standard approaches if you are stuck.
+                        Review these standard approaches or generate a direct solution.
                       </p>
                     </div>
                   </div>
 
-                  {!problem.aiSolutions ? (
-                    <div className="text-center py-10 text-neutral-500 text-sm">
-                      No solutions generated for this problem yet.
+                  {generatingSolution ? (
+                    <div className="flex flex-col items-center justify-center py-12 gap-4 text-neutral-500 dark:text-neutral-400">
+                      <div className="relative flex items-center justify-center w-12 h-12 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
+                        <Loader2 size={24} className="animate-spin text-emerald-500" />
+                      </div>
+                      <span className="text-sm font-semibold tracking-wide animate-pulse">
+                        Generating optimal solution in {LANG_LABELS[language]}...
+                      </span>
+                    </div>
+                  ) : generatedSolution ? (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                        <Bot size={16} /> Direct Solution ({LANG_LABELS[language]})
+                      </h3>
+                      <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
+                        <ReactMarkdown>{generatedSolution}</ReactMarkdown>
+                      </div>
+                    </div>
+                  ) : !problem.aiSolutions || Object.keys(problem.aiSolutions).length === 0 ? (
+                    <div className="text-center py-10 flex flex-col items-center gap-4">
+                      <p className="text-neutral-500 text-sm">
+                        No solutions generated for this problem yet.
+                      </p>
+                      <button
+                        onClick={handleGenerateSolution}
+                        className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
+                      >
+                        Generate Solution
+                      </button>
                     </div>
                   ) : (
                     <div className="space-y-8">

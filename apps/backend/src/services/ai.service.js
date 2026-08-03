@@ -91,3 +91,32 @@ Make sure there are at least 5 test cases. Ensure parameters are correctly typed
     throw new Error('Failed to generate problem details.', { cause: error });
   }
 }
+
+/**
+ * Generate a direct solution for a problem
+ */
+export async function generateSolution(problemTitle, language) {
+  if (!env.GROQ_API_KEY) {
+    throw new Error('GROQ_API_KEY is missing. Cannot generate solution.');
+  }
+
+  const prompt = `You are an expert AI programming assistant. The user wants the solution for the data structure and algorithm problem: "${problemTitle}".
+Please provide a highly detailed explanation and the optimal solution code in ${language}. 
+Use markdown formatting. Include:
+1. **Intuition & Approach**: Explain the optimal approach.
+2. **Time & Space Complexity**: Detail the complexity.
+3. **Code**: Provide the clean, well-commented optimal code snippet in ${language}.`;
+
+  try {
+    const response = await groq.chat.completions.create({
+      messages: [{ role: 'user', content: prompt }],
+      model: 'llama-3.3-70b-versatile',
+      temperature: 0.2,
+      max_completion_tokens: 1000,
+    });
+    return response.choices[0]?.message?.content || 'I could not generate a solution right now.';
+  } catch (error) {
+    console.error('Groq Solution Error:', error);
+    throw new Error('AI Service failed to generate a solution.', { cause: error });
+  }
+}

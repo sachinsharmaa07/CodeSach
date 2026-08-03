@@ -34,4 +34,18 @@ router.post('/hint', async (req, res, next) => {
   }
 });
 
+router.post('/solution', async (req, res, next) => {
+  try {
+    const { problemTitle, language = 'cpp' } = req.body;
+    if (!problemTitle) {
+      res.status(400).json({ status: 'error', message: 'problemTitle is required' });
+      return;
+    }
+    const reply = await aiService.generateSolution(problemTitle, language);
+    res.json({ status: 'success', data: { reply } });
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;
