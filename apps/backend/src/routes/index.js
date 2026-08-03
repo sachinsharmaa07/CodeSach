@@ -6,6 +6,7 @@ import authRoutes from './auth.routes.js';
 import leaderboardRoutes from './leaderboard.routes.js';
 import adminRoutes from './admin.routes.js';
 import userRoutes from './user.routes.js';
+import aiRoutes from './ai.routes.js';
 
 const router = Router();
 
@@ -19,5 +20,6 @@ router.use('/submissions', submissionRoutes);
 router.use('/leaderboard', leaderboardRoutes);
 router.use('/admin', adminRoutes);
 router.use('/users', userRoutes);
+router.use('/ai', aiRoutes);
 
 export default router;

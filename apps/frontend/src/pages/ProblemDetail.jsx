@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { AiChat } from '@/components/AiChat';
 import { problemApi, submissionApi } from '@/services/problem.service';
 import { useThemeStore } from '@/store/theme.store';
 import api from '@/lib/axios';
@@ -50,6 +51,7 @@ export const ProblemDetail = () => {
   const [submitting, setSubmitting] = useState(false);
   const [results, setResults] = useState(null);
   const [activeTab, setActiveTab] = useState('problem'); // 'problem' | 'testcases' | 'results'
+  const [aiOpen, setAiOpen] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
@@ -564,6 +566,14 @@ export const ProblemDetail = () => {
               <RotateCcw size={13} />
             </button>
             <button
+              onClick={() => setAiOpen(!aiOpen)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all hover:bg-white/5"
+              style={{ color: '#10b981' }}
+            >
+              <Bot size={13} />
+              AI Helper
+            </button>
+            <button
               onClick={handleRun}
               disabled={running || submitting}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
@@ -639,6 +649,14 @@ export const ProblemDetail = () => {
           )}
         </div>
       </div>
+
+      <AiChat
+        problemTitle={problem.title}
+        userCode={code}
+        language={language}
+        isOpen={aiOpen}
+        onClose={() => setAiOpen(false)}
+      />
     </div>
   );
 };
