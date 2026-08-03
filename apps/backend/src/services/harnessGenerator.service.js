@@ -123,22 +123,57 @@ public:
 };`;
   },
 
-  generateHarnessCpp(_fnName, _params, _retType) {
-    // For C++, writing a full JSON parser is too much for this script,
-    // so we'll fallback to basic competitive programming cin/cout.
-    // However, JS testcases will pass JSON arrays.
-    // For now, let's keep it simple to ensure compilation works.
+  generateHarnessCpp(fnName, params, retType) {
+    let parseArgs = '';
+    params.forEach((p, i) => {
+      if (p.type === 'integer') {
+        parseArgs += `    int ${p.name} = stoi(lines[${i}]);\n`;
+      } else if (p.type === 'string') {
+        parseArgs += `    string ${p.name} = lines[${i}];\n    if(${p.name}.size() >= 2 && ${p.name}.front() == '"' && ${p.name}.back() == '"') { ${p.name} = ${p.name}.substr(1, ${p.name}.size() - 2); }\n`;
+      } else if (p.type === 'boolean') {
+        parseArgs += `    bool ${p.name} = (lines[${i}] == "true" || lines[${i}] == "1");\n`;
+      } else if (p.type === 'integer array') {
+        parseArgs += `    vector<int> ${p.name};\n    {\n        string s = lines[${i}];\n        int curr = 0; bool inNum = false; bool neg = false;\n        for(char c : s) {\n            if(c == '-' && !inNum) { neg = true; inNum = true; curr = 0; }\n            else if(isdigit(c)) { curr = curr * 10 + (c - '0'); inNum = true; }\n            else if(inNum) { ${p.name}.push_back(neg ? -curr : curr); inNum = false; neg = false; curr = 0; }\n        }\n        if(inNum) ${p.name}.push_back(neg ? -curr : curr);\n    }\n`;
+      } else if (p.type === 'string array') {
+        parseArgs += `    vector<string> ${p.name};\n    {\n        string s = lines[${i}];\n        string curr = ""; bool inStr = false;\n        for(char c : s) {\n            if(c == '"') {\n                if(inStr) { ${p.name}.push_back(curr); inStr = false; }\n                else { inStr = true; curr = ""; }\n            } else if(inStr) {\n                curr += c;\n            }\n        }\n    }\n`;
+      } else {
+        parseArgs += `    string ${p.name} = lines[${i}];\n`;
+      }
+    });
+
+    const args = params.map((p) => p.name).join(', ');
+    let outputLogic;
+    if (retType === 'integer array') {
+      outputLogic = `    cout << "[";\n    for(size_t i=0; i<result.size(); ++i) {\n        cout << result[i] << (i+1 == result.size() ? "" : ",");\n    }\n    cout << "]";\n`;
+    } else if (retType === 'string array') {
+      outputLogic = `    cout << "[";\n    for(size_t i=0; i<result.size(); ++i) {\n        cout << "\\"" << result[i] << "\\"" << (i+1 == result.size() ? "" : ",");\n    }\n    cout << "]";\n`;
+    } else if (retType === 'boolean') {
+      outputLogic = `    cout << (result ? "true" : "false");\n`;
+    } else if (retType === 'string') {
+      outputLogic = `    cout << "\\"" << result << "\\"";\n`;
+    } else {
+      outputLogic = `    cout << result;\n`;
+    }
+
     return `#include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 using namespace std;
 
 {{USER_CODE}}
 
 int main() {
-    // Harness execution logic for C++ is simplified. 
-    // Usually requires rapidjson or similar to parse input arrays perfectly from JS array formats.
-    cout << "Execution harness for C++ not fully implemented for JSON inputs.\\n";
+    vector<string> lines;
+    string line;
+    while(getline(cin, line)) {
+        if(!line.empty()) lines.push_back(line);
+    }
+    if(lines.empty()) return 0;
+${parseArgs}
+    Solution sol;
+    auto result = sol.${fnName}(${args});
+${outputLogic}
     return 0;
 }`;
   },
@@ -154,12 +189,51 @@ int main() {
 }`;
   },
 
-  generateHarnessJava(_fnName, _params, _retType) {
+  generateHarnessJava(fnName, params, retType) {
+    let parseArgs = '';
+    params.forEach((p, i) => {
+      if (p.type === 'integer') {
+        parseArgs += `        int ${p.name} = Integer.parseInt(lines.get(${i}).trim());\n`;
+      } else if (p.type === 'string') {
+        parseArgs += `        String ${p.name} = lines.get(${i}).trim();\n        if(${p.name}.length() >= 2 && ${p.name}.startsWith("\\"") && ${p.name}.endsWith("\\"")) { ${p.name} = ${p.name}.substring(1, ${p.name}.length() - 1); }\n`;
+      } else if (p.type === 'boolean') {
+        parseArgs += `        boolean ${p.name} = Boolean.parseBoolean(lines.get(${i}).trim());\n`;
+      } else if (p.type === 'integer array') {
+        parseArgs += `        String s_${p.name} = lines.get(${i}).trim();\n        if(s_${p.name}.length() <= 2) { s_${p.name} = ""; } else { s_${p.name} = s_${p.name}.substring(1, s_${p.name}.length() - 1); }\n        String[] parts_${p.name} = s_${p.name}.split(",");\n        java.util.List<Integer> list_${p.name} = new java.util.ArrayList<>();\n        for(String p_str : parts_${p.name}) {\n            p_str = p_str.trim();\n            if(!p_str.isEmpty()) list_${p.name}.add(Integer.parseInt(p_str));\n        }\n        int[] ${p.name} = new int[list_${p.name}.size()];\n        for(int j=0; j<${p.name}.length; j++) ${p.name}[j] = list_${p.name}.get(j);\n`;
+      } else if (p.type === 'string array') {
+        parseArgs += `        String s_${p.name} = lines.get(${i}).trim();\n        java.util.List<String> list_${p.name} = new java.util.ArrayList<>();\n        boolean inStr_${p.name} = false;\n        StringBuilder curr_${p.name} = new StringBuilder();\n        for(char c : s_${p.name}.toCharArray()) {\n            if(c == '"') {\n                if(inStr_${p.name}) { list_${p.name}.add(curr_${p.name}.toString()); inStr_${p.name} = false; }\n                else { inStr_${p.name} = true; curr_${p.name} = new StringBuilder(); }\n            } else if(inStr_${p.name}) {\n                curr_${p.name}.append(c);\n            }\n        }\n        String[] ${p.name} = list_${p.name}.toArray(new String[0]);\n`;
+      } else {
+        parseArgs += `        String ${p.name} = lines.get(${i});\n`;
+      }
+    });
+
+    const args = params.map((p) => p.name).join(', ');
+    let outputLogic;
+    if (retType === 'integer array') {
+      outputLogic = `        System.out.print(java.util.Arrays.toString(result).replaceAll(" ", ""));\n`;
+    } else if (retType === 'string array') {
+      outputLogic = `        System.out.print("[");\n        for(int i=0; i<result.length; i++) {\n            System.out.print("\\"" + result[i] + "\\"");\n            if(i < result.length - 1) System.out.print(",");\n        }\n        System.out.print("]");\n`;
+    } else if (retType === 'string') {
+      outputLogic = `        System.out.print("\\"" + result + "\\"");\n`;
+    } else {
+      outputLogic = `        System.out.print(result);\n`;
+    }
+
     return `import java.util.*;
 {{USER_CODE}}
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Execution harness for Java not fully implemented for JSON inputs.");
+        Scanner scanner = new Scanner(System.in);
+        List<String> lines = new ArrayList<>();
+        while(scanner.hasNextLine()) {
+            String line = scanner.nextLine().trim();
+            if(!line.isEmpty()) lines.add(line);
+        }
+        if(lines.isEmpty()) return;
+${parseArgs}
+        Solution sol = new Solution();
+        var result = sol.${fnName}(${args});
+${outputLogic}
     }
 }`;
   },
@@ -176,15 +250,52 @@ ${mapTypeC(retType)} ${fnName}(${args}) {
 }`;
   },
 
-  generateHarnessC(_fnName, _params, _retType) {
+  generateHarnessC(fnName, params, retType) {
+    let parseArgs = '';
+    params.forEach((p, i) => {
+      if (p.type === 'integer') {
+        parseArgs += `    int ${p.name} = atoi(lines[${i}]);\n`;
+      } else if (p.type === 'string') {
+        parseArgs += `    char* ${p.name} = lines[${i}];\n    int len_${p.name} = strlen(${p.name});\n    if(len_${p.name} >= 2 && ${p.name}[0] == '"' && ${p.name}[len_${p.name}-1] == '"') { ${p.name}[len_${p.name}-1] = '\\0'; ${p.name}++; }\n`;
+      } else if (p.type === 'boolean') {
+        parseArgs += `    bool ${p.name} = (strcmp(lines[${i}], "true") == 0 || strcmp(lines[${i}], "1") == 0);\n`;
+      } else if (p.type === 'integer array') {
+        parseArgs += `    char* s_${p.name} = lines[${i}];\n    int count_${p.name} = 0;\n    for(int j=0; s_${p.name}[j]; j++) if(s_${p.name}[j] == ',') count_${p.name}++;\n    if(strlen(s_${p.name}) > 2) count_${p.name}++;\n    int* ${p.name} = (int*)malloc(sizeof(int) * count_${p.name});\n    int idx_${p.name} = 0;\n    char* tok_${p.name} = strtok(s_${p.name} + 1, ",]");\n    while(tok_${p.name}) {\n        ${p.name}[idx_${p.name}++] = atoi(tok_${p.name});\n        tok_${p.name} = strtok(NULL, ",]");\n    }\n`;
+      } else {
+        parseArgs += `    char* ${p.name} = lines[${i}];\n`;
+      }
+    });
+
+    const args = params.map((p) => p.name).join(', ');
+    let outputLogic;
+    if (retType === 'integer array' || retType === 'string array') {
+      outputLogic = `    printf("C arrays return size unknown.\\n");\n`;
+    } else if (retType === 'boolean') {
+      outputLogic = `    printf("%s", result ? "true" : "false");\n`;
+    } else if (retType === 'string') {
+      outputLogic = `    printf("\\"%s\\"", result);\n`;
+    } else {
+      outputLogic = `    printf("%d", result);\n`;
+    }
+
     return `#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 {{USER_CODE}}
 
 int main() {
-    printf("Execution harness for C not fully implemented for JSON inputs.\\n");
+    char lines[10][10000];
+    int line_count = 0;
+    while(fgets(lines[line_count], sizeof(lines[0]), stdin)) {
+        lines[line_count][strcspn(lines[line_count], "\\r\\n")] = 0;
+        if(strlen(lines[line_count]) > 0) line_count++;
+    }
+    if(line_count == 0) return 0;
+${parseArgs}
+    ${mapTypeC(retType)} result = ${fnName}(${args});
+${outputLogic}
     return 0;
 }`;
   },
