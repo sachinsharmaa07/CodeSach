@@ -11,6 +11,11 @@ export const LANGUAGE_IDS = {
   java: 62,
   python: 71,
   javascript: 63,
+  c: 50,
+  go: 60,
+  rust: 73,
+  kotlin: 78,
+  swift: 83,
 };
 
 // ─── Judge0 (when available) ─────────────────────────────────────────────────
@@ -170,6 +175,62 @@ function runLocal(language, fullCode, stdin) {
           }
           // Run
           const r = await spawnRun('java', ['-cp', srcDir, 'Solution'], stdin);
+          if (r.timedOut) return tle();
+          return r.ok ? success(r.stdout) : rte(r.stderr);
+        } else if (language === 'c') {
+          const src = join(dir, `${id}.c`);
+          const bin = join(dir, id);
+          await writeFile(src, fullCode, 'utf8');
+          const comp = await spawnRun('gcc', ['-O2', '-o', bin, src], '', 15000);
+          unlink(src).catch(() => {});
+          if (!comp.ok) {
+            unlink(bin).catch(() => {});
+            return ce(comp.stderr);
+          }
+          const r = await spawnRun(bin, [], stdin);
+          unlink(bin).catch(() => {});
+          if (r.timedOut) return tle();
+          return r.ok ? success(r.stdout) : rte(r.stderr);
+        } else if (language === 'go') {
+          const src = join(dir, `${id}.go`);
+          await writeFile(src, fullCode, 'utf8');
+          const r = await spawnRun('go', ['run', src], stdin);
+          unlink(src).catch(() => {});
+          if (r.timedOut) return tle();
+          return r.ok ? success(r.stdout) : rte(r.stderr);
+        } else if (language === 'rust') {
+          const src = join(dir, `${id}.rs`);
+          const bin = join(dir, id);
+          await writeFile(src, fullCode, 'utf8');
+          const comp = await spawnRun('rustc', [src, '-o', bin], '', 15000);
+          unlink(src).catch(() => {});
+          if (!comp.ok) {
+            unlink(bin).catch(() => {});
+            return ce(comp.stderr);
+          }
+          const r = await spawnRun(bin, [], stdin);
+          unlink(bin).catch(() => {});
+          if (r.timedOut) return tle();
+          return r.ok ? success(r.stdout) : rte(r.stderr);
+        } else if (language === 'kotlin') {
+          const src = join(dir, `${id}.kt`);
+          const bin = join(dir, `${id}.jar`);
+          await writeFile(src, fullCode, 'utf8');
+          const comp = await spawnRun('kotlinc', [src, '-include-runtime', '-d', bin], '', 15000);
+          unlink(src).catch(() => {});
+          if (!comp.ok) {
+            unlink(bin).catch(() => {});
+            return ce(comp.stderr);
+          }
+          const r = await spawnRun('java', ['-jar', bin], stdin);
+          unlink(bin).catch(() => {});
+          if (r.timedOut) return tle();
+          return r.ok ? success(r.stdout) : rte(r.stderr);
+        } else if (language === 'swift') {
+          const src = join(dir, `${id}.swift`);
+          await writeFile(src, fullCode, 'utf8');
+          const r = await spawnRun('swift', [src], stdin);
+          unlink(src).catch(() => {});
           if (r.timedOut) return tle();
           return r.ok ? success(r.stdout) : rte(r.stderr);
         } else {

@@ -25,22 +25,28 @@ import { Allotment } from 'allotment';
 import 'allotment/dist/style.css';
 
 const DEFAULT_CODE = {
-  javascript: `function solve() {
-  // Write your solution here
-  
-}`,
-  python: `def solve():
-    # Write your solution here
-    pass`,
-  cpp: `// Write your solution here
-// Example: vector<int> twoSum(vector<int>& nums, int target) { ... }
-`,
-  java: `// Write your solution method here
-// Example: public int[] twoSum(int[] nums, int target) { ... }
-`,
+  javascript: `// Write your solution here`,
+  python: `# Write your solution here`,
+  cpp: `// Write your solution here`,
+  java: `// Write your solution here`,
+  c: `// Write your solution here`,
+  go: `// Write your solution here`,
+  rust: `// Write your solution here`,
+  kotlin: `// Write your solution here`,
+  swift: `// Write your solution here`,
 };
 
-const LANG_LABELS = { cpp: 'C++', python: 'Python 3', javascript: 'JavaScript', java: 'Java' };
+const LANG_LABELS = {
+  cpp: 'C++',
+  python: 'Python 3',
+  javascript: 'JavaScript',
+  java: 'Java',
+  c: 'C',
+  go: 'Go',
+  rust: 'Rust',
+  kotlin: 'Kotlin',
+  swift: 'Swift',
+};
 
 export const ProblemDetail = () => {
   const { slug } = useParams();
@@ -702,19 +708,58 @@ export const ProblemDetail = () => {
 
               {/* ── AI SOLUTION TAB ── */}
               {activeTab === 'ai-solution' && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <h2 className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
                     AI Solutions
                   </h2>
-                  <div
-                    className="prose prose-sm max-w-none text-[13px]"
-                    style={{ color: 'var(--color-text-muted)' }}
-                  >
-                    <p>
-                      Coming soon: Brute Force, Better, and Optimal approaches will be explained
-                      here.
-                    </p>
-                  </div>
+
+                  {!problem.aiSolutions ? (
+                    <div className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                      No solutions generated for this problem yet.
+                    </div>
+                  ) : (
+                    <div className="space-y-8">
+                      {problem.aiSolutions?.bruteForce && (
+                        <div className="space-y-2">
+                          <h3 className="text-[13px] font-bold text-orange-400">
+                            1. Brute Force Approach
+                          </h3>
+                          <div
+                            className="prose prose-sm max-w-none text-[13px]"
+                            style={{ color: 'var(--color-text)' }}
+                          >
+                            <ReactMarkdown>{problem.aiSolutions.bruteForce}</ReactMarkdown>
+                          </div>
+                        </div>
+                      )}
+                      {problem.aiSolutions?.better && (
+                        <div className="space-y-2">
+                          <h3 className="text-[13px] font-bold text-blue-400">
+                            2. Better Approach
+                          </h3>
+                          <div
+                            className="prose prose-sm max-w-none text-[13px]"
+                            style={{ color: 'var(--color-text)' }}
+                          >
+                            <ReactMarkdown>{problem.aiSolutions.better}</ReactMarkdown>
+                          </div>
+                        </div>
+                      )}
+                      {problem.aiSolutions?.optimal && (
+                        <div className="space-y-2">
+                          <h3 className="text-[13px] font-bold text-emerald-400">
+                            3. Optimal Approach
+                          </h3>
+                          <div
+                            className="prose prose-sm max-w-none text-[13px]"
+                            style={{ color: 'var(--color-text)' }}
+                          >
+                            <ReactMarkdown>{problem.aiSolutions.optimal}</ReactMarkdown>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

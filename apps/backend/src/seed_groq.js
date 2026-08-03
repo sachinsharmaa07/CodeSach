@@ -25,6 +25,8 @@ async function seedMissingGroqDetails() {
         { description: { $exists: false } },
         { harness: { $exists: false } },
         { 'harness.javascript': { $exists: false } },
+        { parameters: { $exists: false } },
+        { parameters: { $size: 0 } },
       ],
     });
 
