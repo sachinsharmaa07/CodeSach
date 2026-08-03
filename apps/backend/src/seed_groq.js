@@ -41,12 +41,11 @@ async function seedMissingGroqDetails() {
         p.description = details.description || p.description;
         p.testCases =
           details.testCases && details.testCases.length > 0 ? details.testCases : p.testCases;
-        if (details.starterCode) {
-          p.starterCode = details.starterCode;
-        }
-        if (details.harness) {
-          p.harness = details.harness;
-        }
+        if (details.starterCode) p.starterCode = details.starterCode;
+        if (details.harness) p.harness = details.harness;
+        if (details.parameters) p.parameters = details.parameters;
+        if (details.returnValue) p.returnValue = details.returnValue;
+        if (details.aiSolutions) p.aiSolutions = details.aiSolutions;
 
         await p.save();
         console.log(`✅ Successfully updated ${p.title}`);

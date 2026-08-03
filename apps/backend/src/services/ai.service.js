@@ -59,6 +59,19 @@ Return ONLY a valid JSON object matching this exact schema, with NO extra markdo
     "python": "import sys, json\\n{{USER_CODE}}\\nif __name__ == '__main__':\\n    lines = sys.stdin.read().strip().split('\\\\n')\\n    # Parse input and call the function\\n    print(json.dumps(problemName(json.loads(lines[0]), json.loads(lines[1]))))",
     "java": "import java.util.*;\\nimport java.io.*;\\n{{USER_CODE}}\\npublic class Main {\\n    public static void main(String[] args) throws Exception {\\n        Scanner sc = new Scanner(System.in);\\n        // Read stdin, instantiate Solution, call method, print result\\n    }\\n}",
     "cpp": "#include <iostream>\\n#include <vector>\\nusing namespace std;\\n{{USER_CODE}}\\nint main() {\\n    // Read stdin, instantiate Solution, call method, print result\\n    return 0;\\n}"
+  },
+  "parameters": [
+    { "name": "nums", "type": "integer array", "description": "Input array containing integers" },
+    { "name": "target", "type": "integer", "description": "Target sum" }
+  ],
+  "returnValue": {
+    "type": "integer array",
+    "description": "Indices of the two numbers"
+  },
+  "aiSolutions": {
+    "bruteForce": "Explanation and code for brute force approach...",
+    "better": "Explanation and code for better approach...",
+    "optimal": "Explanation and optimal code approach..."
   }
 }
 
