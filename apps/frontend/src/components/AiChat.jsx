@@ -78,16 +78,37 @@ export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose }) =>
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.length === 0 ? (
               <div
-                className="h-full flex flex-col items-center justify-center text-center space-y-3"
+                className="h-full flex flex-col items-center justify-center text-center space-y-4"
                 style={{ color: 'var(--color-text-muted)' }}
               >
-                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-2">
-                  <Lightbulb size={24} />
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                  <Bot size={32} />
                 </div>
-                <p className="text-sm font-medium">Stuck on {problemTitle}?</p>
-                <p className="text-xs max-w-[200px] leading-relaxed">
-                  Ask me for a hint, to explain a concept, or to review your code!
+                <h3 className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>
+                  Groq AI Helper
+                </h3>
+                <p className="text-sm max-w-[220px] leading-relaxed">
+                  Stuck on <strong>{problemTitle}</strong>? I can analyze your{' '}
+                  {language === 'cpp'
+                    ? 'C++'
+                    : language === 'javascript'
+                      ? 'JavaScript'
+                      : language === 'java'
+                        ? 'Java'
+                        : 'C'}{' '}
+                  code and give you progressive hints without giving away the exact solution!
                 </p>
+                <div className="flex flex-wrap justify-center gap-2 mt-4">
+                  <span className="text-[10px] px-2 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-500">
+                    Hint 1
+                  </span>
+                  <span className="text-[10px] px-2 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-500">
+                    Explain logic
+                  </span>
+                  <span className="text-[10px] px-2 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-500">
+                    Find bugs
+                  </span>
+                </div>
               </div>
             ) : (
               messages.map((m, i) => (

@@ -26,26 +26,16 @@ import 'allotment/dist/style.css';
 
 const DEFAULT_CODE = {
   javascript: `// Write your solution here`,
-  python: `# Write your solution here`,
   cpp: `// Write your solution here`,
   java: `// Write your solution here`,
   c: `// Write your solution here`,
-  go: `// Write your solution here`,
-  rust: `// Write your solution here`,
-  kotlin: `// Write your solution here`,
-  swift: `// Write your solution here`,
 };
 
 const LANG_LABELS = {
   cpp: 'C++',
-  python: 'Python 3',
   javascript: 'JavaScript',
   java: 'Java',
   c: 'C',
-  go: 'Go',
-  rust: 'Rust',
-  kotlin: 'Kotlin',
-  swift: 'Swift',
 };
 
 export const ProblemDetail = () => {

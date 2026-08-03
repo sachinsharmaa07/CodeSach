@@ -9,13 +9,8 @@ import { randomUUID } from 'crypto';
 export const LANGUAGE_IDS = {
   cpp: 54,
   java: 62,
-  python: 71,
   javascript: 63,
   c: 50,
-  go: 60,
-  rust: 73,
-  kotlin: 78,
-  swift: 83,
 };
 
 // ─── Judge0 (when available) ─────────────────────────────────────────────────

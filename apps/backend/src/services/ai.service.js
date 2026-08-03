@@ -50,25 +50,15 @@ Return ONLY a valid JSON object matching this exact schema, with NO extra markdo
   ],
   "starterCode": {
     "javascript": "function problemName(arg1, arg2) {\\n  // Write your code here\\n}",
-    "python": "def problemName(arg1, arg2):\\n    # Write your code here\\n    pass",
     "java": "class Solution {\\n    public ReturnType problemName(Type1 arg1, Type2 arg2) {\\n        // Write your code here\\n    }\\n}",
     "cpp": "class Solution {\\npublic:\\n    ReturnType problemName(Type1 arg1, Type2 arg2) {\\n        // Write your code here\\n    }\\n};",
-    "c": "ReturnType problemName(Type1 arg1, Type2 arg2) {\\n    // Write your code here\\n}",
-    "go": "func problemName(arg1 Type1, arg2 Type2) ReturnType {\\n    // Write your code here\\n}",
-    "rust": "impl Solution {\\n    pub fn problem_name(arg1: Type1, arg2: Type2) -> ReturnType {\\n        // Write your code here\\n    }\\n}",
-    "kotlin": "class Solution {\\n    fun problemName(arg1: Type1, arg2: Type2): ReturnType {\\n        // Write your code here\\n    }\\n}",
-    "swift": "class Solution {\\n    func problemName(_ arg1: Type1, _ arg2: Type2) -> ReturnType {\\n        // Write your code here\\n    }\\n}"
+    "c": "ReturnType problemName(Type1 arg1, Type2 arg2) {\\n    // Write your code here\\n}"
   },
   "harness": {
     "javascript": "const fs = require('fs');\\n{{USER_CODE}}\\nconst input = fs.readFileSync('/dev/stdin', 'utf-8').trim().split('\\\\n');\\nconsole.log(JSON.stringify(problemName(JSON.parse(input[0]))));",
-    "python": "import sys, json\\n{{USER_CODE}}\\nif __name__ == '__main__':\\n    lines = sys.stdin.read().strip().split('\\\\n')\\n    print(json.dumps(problemName(json.loads(lines[0]))))",
     "java": "import java.util.*;\\nimport java.io.*;\\n{{USER_CODE}}\\npublic class Main {\\n    public static void main(String[] args) throws Exception {\\n        Scanner sc = new Scanner(System.in);\\n        // Read stdin, instantiate Solution, call method, print result\\n    }\\n}",
     "cpp": "#include <iostream>\\n#include <vector>\\nusing namespace std;\\n{{USER_CODE}}\\nint main() {\\n    // Read stdin, instantiate Solution, call method, print result\\n    return 0;\\n}",
-    "c": "#include <stdio.h>\\n#include <stdlib.h>\\n{{USER_CODE}}\\nint main() {\\n    // Read stdin, call method, print result\\n    return 0;\\n}",
-    "go": "package main\\nimport (\\n\\t'bufio'\\n\\t'fmt'\\n\\t'os'\\n)\\n{{USER_CODE}}\\nfunc main() {\\n    // Read stdin, call method, print result\\n}",
-    "rust": "{{USER_CODE}}\\nfn main() {\\n    // Read stdin, call method, print result\\n}",
-    "kotlin": "import java.util.Scanner\\n{{USER_CODE}}\\nfun main(args: Array<String>) {\\n    // Read stdin, instantiate Solution, call method, print result\\n}",
-    "swift": "import Foundation\\n{{USER_CODE}}\\n// Read stdin, instantiate Solution, call method, print result"
+    "c": "#include <stdio.h>\\n#include <stdlib.h>\\n{{USER_CODE}}\\nint main() {\\n    // Read stdin, call method, print result\\n    return 0;\\n}"
   },
   "parameters": [
     { "name": "nums", "type": "integer array", "description": "Input array containing integers" },

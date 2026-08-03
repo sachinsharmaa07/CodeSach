@@ -345,17 +345,36 @@ async function seed() {
             isHidden: false,
           },
         ],
+        parameters: [{ name: 'input', type: 'string', description: 'Standard string input' }],
+        returnValue: { type: 'string', description: 'Standard string output' },
+        aiSolutions: {
+          bruteForce: 'Brute force solution explanation will go here.',
+          better: 'Better solution explanation will go here.',
+          optimal: 'Optimal solution explanation will go here.',
+        },
         starterCode: {
-          javascript: `function solution() {\n  // Write your code here\n}`,
-          python: `def solution():\n    # Write your code here\n    pass`,
-          java: `class Solution {\n    public void solution() {\n        // Write your code here\n    }\n}`,
-          cpp: `class Solution {\npublic:\n    void solution() {\n        // Write your code here\n    }\n};`,
+          javascript: `function solution(input) {\n  // Write your code here\n  return "test_output";\n}`,
+          java: `class Solution {\n    public String solution(String input) {\n        // Write your code here\n        return "test_output";\n    }\n}`,
+          cpp: `class Solution {\npublic:\n    string solution(string input) {\n        // Write your code here\n        return "test_output";\n    }\n};`,
+          c: `char* solution(const char* input) {\n    // Write your code here\n    return strdup("test_output");\n}`,
+        },
+        harness: {
+          javascript: `const fs = require('fs');\n{{USER_CODE}}\nconst input = fs.readFileSync(0, 'utf-8').trim();\nconsole.log(solution(input));`,
+          java: `import java.util.*;\n{{USER_CODE}}\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if(sc.hasNext()) {\n            System.out.println(new Solution().solution(sc.next()));\n        }\n    }\n}`,
+          cpp: `#include <iostream>\n#include <string>\nusing namespace std;\n{{USER_CODE}}\nint main() {\n    string s;\n    if(cin >> s) {\n        Solution sol;\n        cout << sol.solution(s) << endl;\n    }\n    return 0;\n}`,
+          c: `#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n{{USER_CODE}}\nint main() {\n    char input[1024];\n    if (scanf("%1023s", input) == 1) {\n        char* res = solution(input);\n        if (res) {\n            printf("%s\\n", res);\n            free(res);\n        }\n    }\n    return 0;\n}`,
         },
         createdBy: admin._id,
       });
     }
 
-    console.log(`Found ${problems.length} problems to insert.`);
+    console.log(`Clearing existing problems from DB...`);
+    await Problem.deleteMany({});
+    console.log(`Clearing existing submissions from DB...`);
+    const { Submission } = await import('./models/submission.model.js');
+    await Submission.deleteMany({});
+
+    console.log(`Inserting ${problems.length} problems...`);
 
     for (const p of problems) {
       try {
