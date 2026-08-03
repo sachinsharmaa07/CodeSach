@@ -40,7 +40,7 @@ export const AdminProblems = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-white">Manage Problems</h1>
+        <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">Manage Problems</h1>
         <Link to="/admin/problems/new">
           <Button size="sm">
             <Plus size={14} /> Add Problem
@@ -48,10 +48,10 @@ export const AdminProblems = () => {
         </Link>
       </div>
 
-      <div className="rounded-xl border border-white/5 overflow-hidden">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/5 bg-white/[0.02] text-neutral-500">
+            <tr className="border-b border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] text-neutral-700 dark:text-neutral-500">
               <th className="text-left px-4 py-3 font-medium">Title</th>
               <th className="text-left px-4 py-3 font-medium">Difficulty</th>
               <th className="text-left px-4 py-3 font-medium hidden sm:table-cell">Marks</th>
@@ -62,7 +62,10 @@ export const AdminProblems = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-neutral-500">
+                <td
+                  colSpan={5}
+                  className="px-4 py-6 text-center text-neutral-700 dark:text-neutral-500"
+                >
                   Loading...
                 </td>
               </tr>
@@ -70,14 +73,18 @@ export const AdminProblems = () => {
               problems.map((p) => (
                 <tr
                   key={p._id}
-                  className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
+                  className="border-b border-neutral-200 dark:border-white/5 hover:bg-neutral-50 dark:bg-white/[0.02] transition-colors"
                 >
-                  <td className="px-4 py-3 text-white font-medium">{p.title}</td>
+                  <td className="px-4 py-3 text-neutral-900 dark:text-white font-medium">
+                    {p.title}
+                  </td>
                   <td className="px-4 py-3">
                     <Badge label={p.difficulty} variant={p.difficulty} />
                   </td>
-                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">{p.marks}</td>
-                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">
+                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-600 dark:text-neutral-400">
+                    {p.marks}
+                  </td>
+                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-600 dark:text-neutral-400">
                     {p.acceptedSubmissions}/{p.totalSubmissions}
                   </td>
                   <td className="px-4 py-3">

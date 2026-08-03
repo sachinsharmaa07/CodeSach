@@ -1,12 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bot, Send, Loader2, X } from 'lucide-react';
+import { Bot, Send, Loader2, X, ClipboardPaste } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import api from '../lib/axios';
 import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 
-export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose, initialMessage }) => {
+export const AiChat = ({
+  problemTitle,
+  userCode,
+  language,
+  isOpen,
+  onClose,
+  initialMessage,
+  onPasteCode,
+}) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -70,7 +78,7 @@ export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose, init
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg dark:hover:bg-white/10 hover:bg-neutral-200 transition-colors text-neutral-500 dark:text-neutral-400 dark:hover:text-white hover:text-neutral-900"
+              className="p-1.5 rounded-lg dark:hover:bg-neutral-200 dark:bg-white/10 hover:bg-neutral-200 transition-colors text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 dark:hover:text-neutral-900 dark:text-white hover:text-neutral-900"
             >
               <X size={16} />
             </button>
@@ -79,7 +87,7 @@ export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose, init
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center space-y-4 text-neutral-500 dark:text-neutral-400">
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-4 text-neutral-700 dark:text-neutral-500 dark:text-neutral-400">
                 <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-500 dark:text-violet-400 mb-2 shadow-[0_0_15px_rgba(124,58,237,0.1)] dark:shadow-[0_0_15px_rgba(124,58,237,0.2)]">
                   <Bot size={32} />
                 </div>
@@ -89,19 +97,36 @@ export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose, init
                 <p className="text-sm max-w-[240px] leading-relaxed">
                   Stuck on{' '}
                   <strong className="text-violet-600 dark:text-violet-300">{problemTitle}</strong>?
-                  I can analyze your code and give you progressive hints without giving away the
-                  solution!
+                  Ask me anything! I can provide hints, debug your code, or give you the exact
+                  solution.
                 </p>
                 <div className="flex flex-wrap justify-center gap-2 mt-4">
-                  <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full border border-violet-500/20 bg-violet-500/10 text-violet-600 dark:text-violet-400">
+                  <button
+                    onClick={() => handleSend('Can you give me a progressive hint?')}
+                    className="text-[10px] font-semibold px-2.5 py-1 rounded-full border border-violet-500/20 bg-violet-500/10 hover:bg-violet-500/20 text-violet-600 dark:text-violet-400 transition-colors"
+                  >
                     Get Hints
-                  </span>
-                  <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  </button>
+                  <button
+                    onClick={() => handleSend('Can you find any bugs in my code?')}
+                    className="text-[10px] font-semibold px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 transition-colors"
+                  >
                     Find Bugs
-                  </span>
-                  <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full border border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleSend('Can you explain the optimal logic for this problem?')
+                    }
+                    className="text-[10px] font-semibold px-2.5 py-1 rounded-full border border-blue-500/20 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 transition-colors"
+                  >
                     Explain Logic
-                  </span>
+                  </button>
+                  <button
+                    onClick={() => handleSend('Can you provide the exact optimal solution?')}
+                    className="text-[10px] font-semibold px-2.5 py-1 rounded-full border border-orange-500/20 bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 transition-colors"
+                  >
+                    Exact Solution
+                  </button>
                 </div>
               </div>
             ) : (
@@ -121,8 +146,45 @@ export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose, init
                     )}
                   >
                     {m.role === 'ai' ? (
-                      <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed dark:prose-pre:bg-black/50 prose-pre:bg-neutral-50 prose-pre:border dark:prose-pre:border-white/10 prose-pre:border-neutral-200">
-                        <ReactMarkdown>{m.content}</ReactMarkdown>
+                      <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed dark:prose-pre:bg-black/50 prose-pre:bg-neutral-50 prose-pre:border dark:prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border-neutral-200">
+                        <ReactMarkdown
+                          components={{
+                            code({ node, inline, className, children, ...props }) {
+                              const match = /language-(\w+)/.exec(className || '');
+                              return !inline ? (
+                                <div className="rounded-lg overflow-hidden border dark:border-white/10 border-neutral-200 my-4 bg-neutral-100 dark:bg-black/50">
+                                  <div className="flex items-center justify-between px-3 py-1.5 bg-neutral-200 dark:bg-black/20 border-b dark:border-white/10 border-neutral-200/20">
+                                    <span className="text-[10px] font-mono text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                                      {match ? match[1] : 'CODE'}
+                                    </span>
+                                    {onPasteCode && (
+                                      <button
+                                        onClick={() => {
+                                          onPasteCode(String(children).replace(/\n$/, ''));
+                                          toast.success('Code pasted to editor!');
+                                        }}
+                                        className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-neutral-200 dark:bg-white/10 text-[10px] font-bold text-violet-300 transition-colors"
+                                      >
+                                        <ClipboardPaste size={12} /> Paste
+                                      </button>
+                                    )}
+                                  </div>
+                                  <pre className="!m-0 !rounded-none !bg-transparent p-3 overflow-x-auto text-xs text-neutral-800 dark:text-neutral-300">
+                                    <code className={className} {...props}>
+                                      {children}
+                                    </code>
+                                  </pre>
+                                </div>
+                              ) : (
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              );
+                            },
+                          }}
+                        >
+                          {m.content}
+                        </ReactMarkdown>
                       </div>
                     ) : (
                       <p className="whitespace-pre-wrap">{m.content}</p>
@@ -138,7 +200,7 @@ export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose, init
                     size={14}
                     className="animate-spin text-violet-600 dark:text-violet-400"
                   />
-                  <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+                  <span className="text-xs text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 font-medium">
                     Groq is thinking...
                   </span>
                 </div>

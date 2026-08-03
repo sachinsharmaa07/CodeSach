@@ -22,43 +22,51 @@ export const Profile = () => {
           </div>
         )}
         <div>
-          <h1 className="text-xl font-semibold text-white">{user?.username}</h1>
-          <p className="text-sm text-neutral-500">{user?.email}</p>
+          <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">
+            {user?.username}
+          </h1>
+          <p className="text-sm text-neutral-700 dark:text-neutral-500">{user?.email}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5 flex items-center gap-3">
+        <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-5 flex items-center gap-3">
           <Trophy size={20} className="text-amber-400" />
           <div>
-            <p className="text-lg font-semibold text-white">{profile?.totalScore ?? 0}</p>
-            <p className="text-xs text-neutral-500">Total Marks</p>
+            <p className="text-lg font-semibold text-neutral-900 dark:text-white">
+              {profile?.totalScore ?? 0}
+            </p>
+            <p className="text-xs text-neutral-700 dark:text-neutral-500">Total Marks</p>
           </div>
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5 flex items-center gap-3">
+        <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-5 flex items-center gap-3">
           <Flame size={20} className="text-orange-400" />
           <div>
-            <p className="text-lg font-semibold text-white">{profile?.streak?.current ?? 0} days</p>
-            <p className="text-xs text-neutral-500">
+            <p className="text-lg font-semibold text-neutral-900 dark:text-white">
+              {profile?.streak?.current ?? 0} days
+            </p>
+            <p className="text-xs text-neutral-700 dark:text-neutral-500">
               Current Streak (longest: {profile?.streak?.longest ?? 0})
             </p>
           </div>
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5 flex items-center gap-3">
+        <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-5 flex items-center gap-3">
           <CheckCircle2 size={20} className="text-emerald-400" />
           <div>
-            <p className="text-lg font-semibold text-white">
+            <p className="text-lg font-semibold text-neutral-900 dark:text-white">
               {profile?.solvedProblems?.length ?? 0}
             </p>
-            <p className="text-xs text-neutral-500">Problems Solved</p>
+            <p className="text-xs text-neutral-700 dark:text-neutral-500">Problems Solved</p>
           </div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5 overflow-hidden">
-        <h2 className="text-sm font-medium text-white mb-4">Activity (Last Year)</h2>
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-5 overflow-hidden">
+        <h2 className="text-sm font-medium text-neutral-900 dark:text-white mb-4">
+          Activity (Last Year)
+        </h2>
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          <div className="flex flex-col gap-2 pt-6 shrink-0 text-xs text-neutral-500 font-medium">
+          <div className="flex flex-col gap-2 pt-6 shrink-0 text-xs text-neutral-700 dark:text-neutral-500 font-medium">
             <span className="h-3 leading-3">Mon</span>
             <span className="h-3 leading-3 mt-3">Wed</span>
             <span className="h-3 leading-3 mt-3">Fri</span>
@@ -92,7 +100,7 @@ export const Profile = () => {
 
               return (
                 <div className="flex flex-col gap-2">
-                  <div className="flex relative h-4 text-xs text-neutral-500 font-medium">
+                  <div className="flex relative h-4 text-xs text-neutral-700 dark:text-neutral-500 font-medium">
                     {months.map((m, idx) => (
                       <span key={idx} className="absolute" style={{ left: `${m.colIndex * 16}px` }}>
                         {m.name}

@@ -11,15 +11,13 @@ export async function getHint(problemTitle, userCode, message, language) {
     return 'AI features are currently disabled because GROQ_API_KEY is not configured in the environment.';
   }
 
-  const prompt = `You are an expert AI programming assistant. The user is solving the problem "${problemTitle}".
-Their current code in ${language} is:
-\`\`\`${language}
-${userCode}
-\`\`\`
+  const prompt = `You are an expert AI programming assistant. 
+${problemTitle ? `The user is currently working on the problem "${problemTitle}".\n` : ''}
+${userCode ? `Their current code in ${language} is:\n\`\`\`${language}\n${userCode}\n\`\`\`\n` : ''}
 
-The user is asking: "${message}"
+User Message: "${message}"
 
-Provide a concise, helpful hint without writing the full solution for them. Keep it brief and encouraging. Use markdown for code formatting.`;
+Provide a helpful, detailed response. If the user asks for code, provide it cleanly formatted in markdown code blocks.`;
 
   try {
     const response = await groq.chat.completions.create({

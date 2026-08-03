@@ -66,9 +66,9 @@ export const AddProblem = () => {
 
   return (
     <div className="max-w-3xl space-y-6">
-      <h1 className="text-xl font-semibold text-white">Add Problem</h1>
+      <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">Add Problem</h1>
 
-      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-6 space-y-4">
         <Input
           label="Title"
           value={form.title}
@@ -80,7 +80,7 @@ export const AddProblem = () => {
             rows={5}
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500"
+            className="w-full rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none focus:border-violet-500"
           />
         </div>
         <div className="grid grid-cols-3 gap-3">
@@ -89,7 +89,7 @@ export const AddProblem = () => {
             <select
               value={form.difficulty}
               onChange={(e) => setForm((f) => ({ ...f, difficulty: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none"
+              className="w-full rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none"
             >
               <option value="easy" className="bg-[#1a1a1a]">
                 Easy
@@ -120,14 +120,16 @@ export const AddProblem = () => {
             rows={2}
             value={form.constraints}
             onChange={(e) => setForm((f) => ({ ...f, constraints: e.target.value }))}
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500"
+            className="w-full rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none focus:border-violet-500"
           />
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-3">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-6 space-y-3">
         <div className="flex justify-between items-center">
-          <h2 className="text-sm font-medium text-white">Function Parameters</h2>
+          <h2 className="text-sm font-medium text-neutral-900 dark:text-white">
+            Function Parameters
+          </h2>
           <Button size="sm" variant="ghost" onClick={addParameter}>
             <Plus size={14} />
           </Button>
@@ -142,7 +144,7 @@ export const AddProblem = () => {
             <select
               value={p.type}
               onChange={(e) => updateParameter(i, 'type', e.target.value)}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none"
+              className="rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none"
             >
               <option value="integer">Integer</option>
               <option value="string">String</option>
@@ -160,13 +162,13 @@ export const AddProblem = () => {
             </Button>
           </div>
         ))}
-        <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
-          <h2 className="text-sm font-medium text-white">Return Value</h2>
+        <div className="mt-4 pt-4 border-t border-neutral-200 dark:border-white/10 space-y-2">
+          <h2 className="text-sm font-medium text-neutral-900 dark:text-white">Return Value</h2>
           <div className="flex gap-2 items-start">
             <select
               value={returnValue.type}
               onChange={(e) => setReturnValue((prev) => ({ ...prev, type: e.target.value }))}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none w-1/3"
+              className="rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none w-1/3"
             >
               <option value="integer">Integer</option>
               <option value="string">String</option>
@@ -184,9 +186,9 @@ export const AddProblem = () => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-3">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-6 space-y-3">
         <div className="flex justify-between items-center">
-          <h2 className="text-sm font-medium text-white">Examples</h2>
+          <h2 className="text-sm font-medium text-neutral-900 dark:text-white">Examples</h2>
           <Button size="sm" variant="ghost" onClick={addExample}>
             <Plus size={14} />
           </Button>
@@ -212,9 +214,9 @@ export const AddProblem = () => {
         ))}
       </div>
 
-      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-3">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-6 space-y-3">
         <div className="flex justify-between items-center">
-          <h2 className="text-sm font-medium text-white">Test Cases</h2>
+          <h2 className="text-sm font-medium text-neutral-900 dark:text-white">Test Cases</h2>
           <Button size="sm" variant="ghost" onClick={addTestCase}>
             <Plus size={14} />
           </Button>
@@ -231,7 +233,7 @@ export const AddProblem = () => {
               value={tc.expectedOutput}
               onChange={(e) => updateTestCase(i, 'expectedOutput', e.target.value)}
             />
-            <label className="flex items-center gap-1.5 text-xs text-neutral-400 whitespace-nowrap pt-2">
+            <label className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 whitespace-nowrap pt-2">
               <input
                 type="checkbox"
                 checked={tc.isHidden}

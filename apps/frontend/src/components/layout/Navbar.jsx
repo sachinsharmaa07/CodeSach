@@ -27,8 +27,7 @@ export const Navbar = () => {
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2 font-semibold"
-          style={{ color: 'var(--color-text)' }}
+          className="flex items-center gap-2 font-semibold text-neutral-900 dark:text-neutral-100"
         >
           <Code2 size={20} className="text-violet-500" />
           <span>
@@ -40,30 +39,26 @@ export const Navbar = () => {
         <div className="hidden md:flex items-center gap-6 text-sm">
           <Link
             to="/problems"
-            className="transition-colors hover:text-violet-500"
-            style={{ color: 'var(--color-text-muted)' }}
+            className="transition-colors text-neutral-600 hover:text-violet-500 dark:text-neutral-400 dark:hover:text-violet-400"
           >
             Problems
           </Link>
           <Link
             to="/sheet"
-            className="transition-colors hover:text-violet-500 font-medium"
-            style={{ color: 'var(--color-brand)' }}
+            className="transition-colors font-medium text-violet-600 dark:text-violet-400 hover:text-violet-500 dark:hover:text-violet-300"
           >
             DSA Sheet
           </Link>
           <Link
             to="/leaderboard"
-            className="transition-colors hover:text-violet-500"
-            style={{ color: 'var(--color-text-muted)' }}
+            className="transition-colors text-neutral-600 hover:text-violet-500 dark:text-neutral-400 dark:hover:text-violet-400"
           >
             Leaderboard
           </Link>
           {user?.role === 'admin' && (
             <Link
               to="/admin"
-              className="transition-colors hover:text-violet-500 flex items-center gap-1"
-              style={{ color: 'var(--color-text-muted)' }}
+              className="transition-colors flex items-center gap-1 text-neutral-600 hover:text-violet-500 dark:text-neutral-400 dark:hover:text-violet-400"
             >
               <LayoutDashboard size={14} /> Admin
             </Link>
@@ -77,18 +72,14 @@ export const Navbar = () => {
             <>
               <Link
                 to="/profile"
-                className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition-colors hover:text-violet-500"
-                style={{ color: 'var(--color-text-muted)' }}
+                className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition-colors text-neutral-600 hover:text-violet-500 dark:text-neutral-400 dark:hover:text-violet-400"
               >
                 <User size={15} />
                 <span className="hidden sm:inline">{user?.username}</span>
               </Link>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition-colors"
-                style={{ color: 'var(--color-text-muted)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-text)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text-muted)')}
+                className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition-colors text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-900 dark:text-white"
               >
                 <LogOut size={15} />
                 <span className="hidden sm:inline">Logout</span>

@@ -21,21 +21,26 @@ export const Leaderboard = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="text-neutral-500 text-sm">Loading leaderboard...</div>;
+  if (loading)
+    return (
+      <div className="text-neutral-700 dark:text-neutral-500 text-sm">Loading leaderboard...</div>
+    );
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-white flex items-center gap-2">
+        <h1 className="text-2xl font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
           <Trophy size={22} className="text-amber-400" /> Leaderboard
         </h1>
-        <p className="text-neutral-500 text-sm mt-1">Top solvers ranked by total marks</p>
+        <p className="text-neutral-700 dark:text-neutral-500 text-sm mt-1">
+          Top solvers ranked by total marks
+        </p>
       </div>
 
-      <div className="rounded-xl border border-white/5 overflow-hidden">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/5 bg-white/[0.02] text-neutral-500">
+            <tr className="border-b border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] text-neutral-700 dark:text-neutral-500">
               <th className="text-left px-4 py-3 font-medium w-16">Rank</th>
               <th className="text-left px-4 py-3 font-medium">User</th>
               <th className="text-left px-4 py-3 font-medium hidden sm:table-cell">Solved</th>
@@ -63,18 +68,22 @@ export const Leaderboard = () => {
                         {r.username[0]?.toUpperCase()}
                       </div>
                     )}
-                    <span className="text-white font-medium">{r.username}</span>
+                    <span className="text-neutral-900 dark:text-white font-medium">
+                      {r.username}
+                    </span>
                   </div>
                 </td>
-                <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">
+                <td className="px-4 py-3 hidden sm:table-cell text-neutral-600 dark:text-neutral-400">
                   {r.problemsSolved}
                 </td>
-                <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">
+                <td className="px-4 py-3 hidden sm:table-cell text-neutral-600 dark:text-neutral-400">
                   <span className="inline-flex items-center gap-1">
                     <Flame size={13} className="text-orange-400" /> {r.currentStreak}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right font-semibold text-white">{r.totalScore}</td>
+                <td className="px-4 py-3 text-right font-semibold text-neutral-900 dark:text-white">
+                  {r.totalScore}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -30,14 +30,14 @@ export const AdminSubmissions = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-white">Submissions</h1>
+        <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">Submissions</h1>
         <select
           value={statusFilter}
           onChange={(e) => {
             setStatusFilter(e.target.value);
             setPage(1);
           }}
-          className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-neutral-300 focus:outline-none"
+          className="rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-1.5 text-sm text-neutral-300 focus:outline-none"
         >
           <option value="" className="bg-[#1a1a1a]">
             All statuses
@@ -57,10 +57,10 @@ export const AdminSubmissions = () => {
         </select>
       </div>
 
-      <div className="rounded-xl border border-white/5 overflow-hidden">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/5 bg-white/[0.02] text-neutral-500">
+            <tr className="border-b border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] text-neutral-700 dark:text-neutral-500">
               <th className="text-left px-4 py-3 font-medium">User</th>
               <th className="text-left px-4 py-3 font-medium">Problem</th>
               <th className="text-left px-4 py-3 font-medium">Language</th>
@@ -72,13 +72,19 @@ export const AdminSubmissions = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-neutral-500">
+                <td
+                  colSpan={6}
+                  className="px-4 py-6 text-center text-neutral-700 dark:text-neutral-500"
+                >
                   Loading...
                 </td>
               </tr>
             ) : submissions.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-neutral-500">
+                <td
+                  colSpan={6}
+                  className="px-4 py-6 text-center text-neutral-700 dark:text-neutral-500"
+                >
                   No submissions found
                 </td>
               </tr>
@@ -86,23 +92,27 @@ export const AdminSubmissions = () => {
               submissions.map((s) => (
                 <tr
                   key={s._id}
-                  className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
+                  className="border-b border-neutral-200 dark:border-white/5 hover:bg-neutral-50 dark:bg-white/[0.02] transition-colors"
                 >
-                  <td className="px-4 py-3 text-white">{s.user?.username ?? 'Unknown'}</td>
+                  <td className="px-4 py-3 text-neutral-900 dark:text-white">
+                    {s.user?.username ?? 'Unknown'}
+                  </td>
                   <td className="px-4 py-3 text-neutral-300">
                     {s.problem?.title ?? 'Deleted problem'}
                   </td>
-                  <td className="px-4 py-3 text-neutral-500 uppercase text-xs">{s.language}</td>
+                  <td className="px-4 py-3 text-neutral-700 dark:text-neutral-500 uppercase text-xs">
+                    {s.language}
+                  </td>
                   <td className="px-4 py-3">
                     <Badge
                       label={s.status.replace('_', ' ')}
                       variant={STATUS_VARIANT[s.status] ?? 'default'}
                     />
                   </td>
-                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">
+                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-600 dark:text-neutral-400">
                     {s.marksAwarded}
                   </td>
-                  <td className="px-4 py-3 hidden md:table-cell text-neutral-500 text-xs">
+                  <td className="px-4 py-3 hidden md:table-cell text-neutral-700 dark:text-neutral-500 text-xs">
                     {new Date(s.createdAt).toLocaleString()}
                   </td>
                 </tr>
@@ -116,17 +126,17 @@ export const AdminSubmissions = () => {
         <button
           disabled={page <= 1}
           onClick={() => setPage((p) => p - 1)}
-          className="px-3 py-1.5 rounded-lg text-sm text-neutral-400 border border-white/10 disabled:opacity-40 hover:bg-white/5"
+          className="px-3 py-1.5 rounded-lg text-sm text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-white/10 disabled:opacity-40 hover:bg-neutral-100 dark:bg-white/5"
         >
           Previous
         </button>
-        <span className="px-3 py-1.5 text-sm text-neutral-500">
+        <span className="px-3 py-1.5 text-sm text-neutral-700 dark:text-neutral-500">
           Page {page} of {totalPages}
         </span>
         <button
           disabled={page >= totalPages}
           onClick={() => setPage((p) => p + 1)}
-          className="px-3 py-1.5 rounded-lg text-sm text-neutral-400 border border-white/10 disabled:opacity-40 hover:bg-white/5"
+          className="px-3 py-1.5 rounded-lg text-sm text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-white/10 disabled:opacity-40 hover:bg-neutral-100 dark:bg-white/5"
         >
           Next
         </button>

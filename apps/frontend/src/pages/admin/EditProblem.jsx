@@ -54,12 +54,13 @@ export const EditProblem = () => {
     }
   };
 
-  if (!form) return <div className="text-neutral-500 text-sm">Loading...</div>;
+  if (!form)
+    return <div className="text-neutral-700 dark:text-neutral-500 text-sm">Loading...</div>;
 
   return (
     <div className="max-w-2xl space-y-4">
-      <h1 className="text-xl font-semibold text-white">Edit Problem</h1>
-      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
+      <h1 className="text-xl font-semibold text-neutral-900 dark:text-white">Edit Problem</h1>
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-6 space-y-4">
         <Input
           label="Title"
           value={form.title}
@@ -71,7 +72,7 @@ export const EditProblem = () => {
             rows={5}
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500"
+            className="w-full rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none focus:border-violet-500"
           />
         </div>
         <div className="grid grid-cols-3 gap-3">
@@ -80,7 +81,7 @@ export const EditProblem = () => {
             <select
               value={form.difficulty}
               onChange={(e) => setForm((f) => ({ ...f, difficulty: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none"
+              className="w-full rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none"
             >
               <option value="easy" className="bg-[#1a1a1a]">
                 Easy
@@ -111,14 +112,16 @@ export const EditProblem = () => {
             rows={2}
             value={form.constraints}
             onChange={(e) => setForm((f) => ({ ...f, constraints: e.target.value }))}
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500"
+            className="w-full rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none focus:border-violet-500"
           />
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-3">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-6 space-y-3">
         <div className="flex justify-between items-center">
-          <h2 className="text-sm font-medium text-white">Function Parameters</h2>
+          <h2 className="text-sm font-medium text-neutral-900 dark:text-white">
+            Function Parameters
+          </h2>
           <Button size="sm" variant="ghost" onClick={addParameter}>
             <Plus size={14} />
           </Button>
@@ -133,7 +136,7 @@ export const EditProblem = () => {
             <select
               value={p.type}
               onChange={(e) => updateParameter(i, 'type', e.target.value)}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none"
+              className="rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none"
             >
               <option value="integer">Integer</option>
               <option value="string">String</option>
@@ -151,13 +154,13 @@ export const EditProblem = () => {
             </Button>
           </div>
         ))}
-        <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
-          <h2 className="text-sm font-medium text-white">Return Value</h2>
+        <div className="mt-4 pt-4 border-t border-neutral-200 dark:border-white/10 space-y-2">
+          <h2 className="text-sm font-medium text-neutral-900 dark:text-white">Return Value</h2>
           <div className="flex gap-2 items-start">
             <select
               value={returnValue.type}
               onChange={(e) => setReturnValue((prev) => ({ ...prev, type: e.target.value }))}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white focus:outline-none w-1/3"
+              className="rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 px-3 py-2 text-sm text-neutral-900 dark:text-white focus:outline-none w-1/3"
             >
               <option value="integer">Integer</option>
               <option value="string">String</option>

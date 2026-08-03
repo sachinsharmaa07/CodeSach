@@ -28,18 +28,24 @@ export const Problems = () => {
     return Math.round((p.acceptedSubmissions / p.totalSubmissions) * 100) + '%';
   };
 
-  if (loading) return <div className="text-neutral-500 text-sm p-8">Loading problems...</div>;
+  if (loading)
+    return (
+      <div className="text-neutral-700 dark:text-neutral-500 text-sm p-8">Loading problems...</div>
+    );
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500" />
+          <Search
+            size={15}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-700 dark:text-neutral-500"
+          />
           <input
             placeholder="Search problems..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pl-9 pr-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
+            className="w-full rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 py-2 pl-9 pr-3 text-sm text-neutral-900 dark:text-white placeholder-neutral-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
           />
         </div>
         <div className="flex gap-2">
@@ -55,10 +61,10 @@ export const Problems = () => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/5 overflow-hidden">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/5 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/5 bg-white/[0.02] text-neutral-500">
+            <tr className="border-b border-neutral-200 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] text-neutral-700 dark:text-neutral-500">
               <th className="text-left px-4 py-3 font-medium w-12">Status</th>
               <th className="text-left px-4 py-3 font-medium">Title</th>
               <th className="text-left px-4 py-3 font-medium hidden md:table-cell">Category</th>
@@ -69,7 +75,10 @@ export const Problems = () => {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-neutral-500">
+                <td
+                  colSpan={5}
+                  className="px-4 py-8 text-center text-neutral-700 dark:text-neutral-500"
+                >
                   No problems found
                 </td>
               </tr>
@@ -77,7 +86,7 @@ export const Problems = () => {
               filtered.map((p) => (
                 <tr
                   key={p._id}
-                  className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
+                  className="border-b border-neutral-200 dark:border-white/5 hover:bg-neutral-50 dark:bg-white/[0.02] transition-colors"
                 >
                   <td className="px-4 py-3">
                     <CheckCircle2 size={14} className="text-neutral-600" />
@@ -85,16 +94,18 @@ export const Problems = () => {
                   <td className="px-4 py-3">
                     <Link
                       to={`/problems/${p.slug}`}
-                      className="text-white hover:text-violet-400 transition-colors font-medium"
+                      className="text-neutral-900 dark:text-white hover:text-violet-400 transition-colors font-medium"
                     >
                       {p.title}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 hidden md:table-cell text-neutral-500">{p.category}</td>
+                  <td className="px-4 py-3 hidden md:table-cell text-neutral-700 dark:text-neutral-500">
+                    {p.category}
+                  </td>
                   <td className="px-4 py-3">
                     <Badge label={p.difficulty} variant={p.difficulty} />
                   </td>
-                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-500">
+                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-700 dark:text-neutral-500">
                     {acceptance(p)}
                   </td>
                 </tr>

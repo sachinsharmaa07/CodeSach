@@ -16,6 +16,7 @@ import {
   BookOpen,
   Code2,
   Info,
+  ClipboardPaste,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
@@ -173,7 +174,7 @@ export const ProblemDetail = () => {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-950 text-neutral-500 dark:text-neutral-400">
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-50 dark:bg-neutral-950 text-neutral-500 dark:text-neutral-400">
         <Loader2 size={24} className="animate-spin text-violet-500 mr-2" />
         <span className="text-sm font-medium">Loading workspace...</span>
       </div>
@@ -181,7 +182,7 @@ export const ProblemDetail = () => {
 
   if (!problem)
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-950 text-neutral-500 dark:text-neutral-400">
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-50 dark:bg-neutral-950 text-neutral-500 dark:text-neutral-400">
         <span className="text-sm">Problem not found.</span>
       </div>
     );
@@ -219,7 +220,7 @@ export const ProblemDetail = () => {
                     className={cn(
                       'relative px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap',
                       isActive
-                        ? 'text-neutral-900 dark:text-white'
+                        ? 'text-black dark:text-white'
                         : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-200 hover:bg-neutral-100 dark:bg-white/5',
                     )}
                   >
@@ -232,7 +233,10 @@ export const ProblemDetail = () => {
                     )}
                     <Icon
                       size={14}
-                      className={cn('relative z-10', isActive ? 'text-violet-400' : '')}
+                      className={cn(
+                        'relative z-10',
+                        isActive ? 'text-violet-600 dark:text-violet-400' : '',
+                      )}
                     />
                     <span className="relative z-10">{tab.label}</span>
                     {tab.id === 'results' && results && (
@@ -240,7 +244,7 @@ export const ProblemDetail = () => {
                         className={cn(
                           'relative z-10 ml-1 rounded-full px-1.5 py-0.5 text-[10px]',
                           allPassed
-                            ? 'bg-emerald-500/20 text-emerald-400'
+                            ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                             : 'bg-rose-500/20 text-rose-400',
                         )}
                       >
@@ -268,12 +272,12 @@ export const ProblemDetail = () => {
                         {problem.title}
                       </h1>
                       {isSolved && (
-                        <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+                        <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
                           <CheckCircle size={14} /> Solved
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 text-xs font-medium text-neutral-500 dark:text-neutral-400 flex-wrap">
+                    <div className="flex items-center gap-3 text-xs font-medium text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 flex-wrap">
                       <Badge label={problem.difficulty} variant={problem.difficulty} />
                       <span className="bg-neutral-100 dark:bg-white/5 px-2 py-1 rounded-md">
                         Acceptance:{' '}
@@ -293,7 +297,7 @@ export const ProblemDetail = () => {
                         {problem.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="text-[11px] px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 font-semibold"
+                            className="text-[11px] px-2.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-700 dark:text-violet-300 font-semibold"
                           >
                             {tag}
                           </span>
@@ -317,14 +321,14 @@ export const ProblemDetail = () => {
                           'Can you give me a small hint for this problem without giving away the solution?',
                         )
                       }
-                      className="flex-1 group flex items-center justify-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 py-2.5 rounded-xl text-xs font-semibold transition-all"
+                      className="flex-1 group flex items-center justify-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 py-2.5 rounded-xl text-xs font-semibold transition-all"
                     >
                       <Lightbulb size={14} className="group-hover:scale-110 transition-transform" />{' '}
                       Get a Hint
                     </button>
                     <button
                       onClick={handleGenerateSolution}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold transition-all group"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold transition-all group"
                     >
                       <Bot size={14} className="group-hover:scale-110 transition-transform" />{' '}
                       Solution
@@ -332,7 +336,7 @@ export const ProblemDetail = () => {
                   </div>
 
                   {/* Description */}
-                  <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                  <div className="prose dark:prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300 leading-relaxed">
                     <ReactMarkdown>{problem.description}</ReactMarkdown>
                   </div>
 
@@ -342,18 +346,21 @@ export const ProblemDetail = () => {
                     {problem.parameters?.length > 0 && (
                       <div className="bg-neutral-50 dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-3 text-neutral-200 font-semibold text-sm">
-                          <Code2 size={16} className="text-violet-400" /> Parameters
+                          <Code2 size={16} className="text-violet-600 dark:text-violet-400" />{' '}
+                          Parameters
                         </div>
                         <ul className="space-y-3">
                           {problem.parameters.map((p, i) => (
                             <li key={i} className="text-xs">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="font-mono bg-violet-500/20 text-violet-300 px-1.5 py-0.5 rounded border border-violet-500/20">
+                                <span className="font-mono bg-violet-500/20 text-violet-700 dark:text-violet-300 px-1.5 py-0.5 rounded border border-violet-500/20">
                                   {p.name}
                                 </span>
-                                <span className="text-neutral-500 italic">{p.type}</span>
+                                <span className="text-neutral-700 dark:text-neutral-500 italic">
+                                  {p.type}
+                                </span>
                               </div>
-                              <span className="text-neutral-500 dark:text-neutral-400 ml-1">
+                              <span className="text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 ml-1">
                                 {p.description}
                               </span>
                             </li>
@@ -366,13 +373,17 @@ export const ProblemDetail = () => {
                     {problem.returnValue && (
                       <div className="bg-neutral-50 dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-3 text-neutral-200 font-semibold text-sm">
-                          <CheckCircle size={16} className="text-emerald-400" /> Returns
+                          <CheckCircle
+                            size={16}
+                            className="text-emerald-600 dark:text-emerald-400"
+                          />{' '}
+                          Returns
                         </div>
                         <div className="text-xs">
                           <span className="font-mono bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/20 block w-max mb-1.5">
                             {problem.returnValue.type}
                           </span>
-                          <span className="text-neutral-500 dark:text-neutral-400 ml-1">
+                          <span className="text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 ml-1">
                             {problem.returnValue.description}
                           </span>
                         </div>
@@ -382,11 +393,11 @@ export const ProblemDetail = () => {
 
                   {/* Constraints */}
                   {problem.constraints && (
-                    <div className="bg-[#1a1525] border border-violet-500/20 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2 text-violet-300 font-semibold text-sm">
+                    <div className="bg-violet-50 dark:bg-[#1a1525] border border-violet-500/20 rounded-xl p-4">
+                      <div className="flex items-center gap-2 mb-2 text-violet-700 dark:text-violet-300 font-semibold text-sm">
                         <Info size={16} /> Constraints
                       </div>
-                      <div className="prose prose-invert prose-sm max-w-none text-[13px] text-violet-200/70 font-mono">
+                      <div className="prose dark:prose-invert prose-sm max-w-none text-[13px] text-violet-900/70 dark:text-violet-200/70 font-mono">
                         <ReactMarkdown>{problem.constraints}</ReactMarkdown>
                       </div>
                     </div>
@@ -402,7 +413,7 @@ export const ProblemDetail = () => {
                   className="flex flex-col h-full"
                 >
                   {visibleTestCases.length === 0 ? (
-                    <div className="flex-1 flex items-center justify-center text-neutral-500 text-sm">
+                    <div className="flex-1 flex items-center justify-center text-neutral-700 dark:text-neutral-500 text-sm">
                       All test cases are hidden. Run code to evaluate.
                     </div>
                   ) : (
@@ -436,7 +447,7 @@ export const ProblemDetail = () => {
                           className="space-y-4"
                         >
                           <div>
-                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
+                            <div className="text-xs font-semibold text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
                               Input
                             </div>
                             <pre className="p-4 rounded-xl bg-white/[0.03] border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-neutral-300 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
@@ -444,10 +455,10 @@ export const ProblemDetail = () => {
                             </pre>
                           </div>
                           <div>
-                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
+                            <div className="text-xs font-semibold text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
                               Expected Output
                             </div>
-                            <pre className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
+                            <pre className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
                               {visibleTestCases[selectedTestCase].expectedOutput}
                             </pre>
                           </div>
@@ -466,7 +477,7 @@ export const ProblemDetail = () => {
                   className="flex flex-col h-full"
                 >
                   {(running || submitting) && (
-                    <div className="flex flex-col items-center justify-center h-full gap-4 text-neutral-500 dark:text-neutral-400">
+                    <div className="flex flex-col items-center justify-center h-full gap-4 text-neutral-700 dark:text-neutral-500 dark:text-neutral-400">
                       <div className="relative flex items-center justify-center w-16 h-16 bg-violet-500/10 rounded-2xl border border-violet-500/20">
                         <Loader2 size={28} className="animate-spin text-violet-500" />
                       </div>
@@ -483,7 +494,7 @@ export const ProblemDetail = () => {
                         <p className="text-neutral-700 dark:text-neutral-300 font-medium">
                           No Results Yet
                         </p>
-                        <p className="text-xs text-neutral-500 mt-1">
+                        <p className="text-xs text-neutral-700 dark:text-neutral-500 mt-1">
                           Run your code to compile and evaluate test cases.
                         </p>
                       </div>
@@ -505,7 +516,7 @@ export const ProblemDetail = () => {
                           className={cn(
                             'p-2 rounded-full',
                             allPassed
-                              ? 'bg-emerald-500/20 text-emerald-400'
+                              ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
                               : 'bg-rose-500/20 text-rose-400',
                           )}
                         >
@@ -515,12 +526,14 @@ export const ProblemDetail = () => {
                           <h2
                             className={cn(
                               'text-lg font-bold',
-                              allPassed ? 'text-emerald-400' : 'text-rose-400',
+                              allPassed
+                                ? 'text-emerald-600 dark:text-emerald-400'
+                                : 'text-rose-400',
                             )}
                           >
                             {allPassed ? 'Accepted!' : 'Wrong Answer'}
                           </h2>
-                          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+                          <p className="text-sm text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 mt-0.5">
                             {passedCount} / {results.length} testcases passed
                           </p>
                         </div>
@@ -576,7 +589,7 @@ export const ProblemDetail = () => {
                               <>
                                 {results[selectedResultCase].input !== '(hidden)' && (
                                   <div>
-                                    <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
+                                    <div className="text-xs font-semibold text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
                                       Input
                                     </div>
                                     <pre className="p-3 rounded-xl bg-white/[0.03] border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-neutral-300 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
@@ -586,10 +599,10 @@ export const ProblemDetail = () => {
                                 )}
                                 <div className="grid grid-cols-1 gap-4">
                                   <div>
-                                    <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
+                                    <div className="text-xs font-semibold text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
                                       Expected Output
                                     </div>
-                                    <pre className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
+                                    <pre className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
                                       {results[selectedResultCase].expected}
                                     </pre>
                                   </div>
@@ -623,18 +636,20 @@ export const ProblemDetail = () => {
                 >
                   <div className="flex items-center gap-3 p-4 bg-violet-500/10 border border-violet-500/20 rounded-xl">
                     <div className="w-10 h-10 bg-violet-500/20 rounded-full flex items-center justify-center">
-                      <Bot className="text-violet-400" size={20} />
+                      <Bot className="text-violet-600 dark:text-violet-400" size={20} />
                     </div>
                     <div>
-                      <h2 className="text-sm font-bold text-violet-300">AI Verified Solutions</h2>
-                      <p className="text-xs text-violet-300/70">
+                      <h2 className="text-sm font-bold text-violet-700 dark:text-violet-300">
+                        AI Verified Solutions
+                      </h2>
+                      <p className="text-xs text-violet-700 dark:text-violet-300/70">
                         Review these standard approaches or generate a direct solution.
                       </p>
                     </div>
                   </div>
 
                   {generatingSolution ? (
-                    <div className="flex flex-col items-center justify-center py-12 gap-4 text-neutral-500 dark:text-neutral-400">
+                    <div className="flex flex-col items-center justify-center py-12 gap-4 text-neutral-700 dark:text-neutral-500 dark:text-neutral-400">
                       <div className="relative flex items-center justify-center w-12 h-12 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
                         <Loader2 size={24} className="animate-spin text-emerald-500" />
                       </div>
@@ -647,13 +662,48 @@ export const ProblemDetail = () => {
                       <h3 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
                         <Bot size={16} /> Direct Solution ({LANG_LABELS[language]})
                       </h3>
-                      <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
-                        <ReactMarkdown>{generatedSolution}</ReactMarkdown>
+                      <div className="prose dark:prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
+                        <ReactMarkdown
+                          components={{
+                            code({ node, inline, className, children, ...props }) {
+                              const match = /language-(\w+)/.exec(className || '');
+                              return !inline ? (
+                                <div className="rounded-lg overflow-hidden border dark:border-white/10 border-neutral-200 my-4 bg-neutral-100 dark:bg-black/50">
+                                  <div className="flex items-center justify-between px-3 py-1.5 bg-neutral-200 dark:bg-black/20 border-b dark:border-white/10 border-neutral-200/50">
+                                    <span className="text-[10px] font-mono text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                                      {match ? match[1] : 'CODE'}
+                                    </span>
+                                    <button
+                                      onClick={() => {
+                                        setCode(String(children).replace(/\n$/, ''));
+                                        toast.success('Code pasted to editor!');
+                                      }}
+                                      className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-emerald-500/10 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 transition-colors"
+                                    >
+                                      <ClipboardPaste size={12} /> Paste to Editor
+                                    </button>
+                                  </div>
+                                  <pre className="!m-0 !rounded-none !bg-transparent p-3 overflow-x-auto text-xs text-neutral-800 dark:text-neutral-300">
+                                    <code className={className} {...props}>
+                                      {children}
+                                    </code>
+                                  </pre>
+                                </div>
+                              ) : (
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              );
+                            },
+                          }}
+                        >
+                          {generatedSolution}
+                        </ReactMarkdown>
                       </div>
                     </div>
                   ) : !problem.aiSolutions || Object.keys(problem.aiSolutions).length === 0 ? (
                     <div className="text-center py-10 flex flex-col items-center gap-4">
-                      <p className="text-neutral-500 text-sm">
+                      <p className="text-neutral-700 dark:text-neutral-500 text-sm">
                         No solutions generated for this problem yet.
                       </p>
                       <button
@@ -667,28 +717,98 @@ export const ProblemDetail = () => {
                     <div className="space-y-8">
                       {problem.aiSolutions?.bruteForce && (
                         <div className="space-y-3">
-                          <h3 className="text-sm font-bold text-orange-400 flex items-center gap-2">
+                          <h3 className="text-sm font-bold text-orange-600 dark:text-orange-400 flex items-center gap-2">
                             <span className="w-5 h-5 rounded bg-orange-500/20 flex items-center justify-center text-[10px]">
                               1
                             </span>{' '}
                             Brute Force
                           </h3>
-                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
-                            <ReactMarkdown>{problem.aiSolutions.bruteForce}</ReactMarkdown>
+                          <div className="prose dark:prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
+                            <ReactMarkdown
+                              components={{
+                                code({ node, inline, className, children, ...props }) {
+                                  const match = /language-(\w+)/.exec(className || '');
+                                  return !inline ? (
+                                    <div className="rounded-lg overflow-hidden border dark:border-white/10 border-neutral-200 my-4 bg-neutral-100 dark:bg-black/50">
+                                      <div className="flex items-center justify-between px-3 py-1.5 bg-neutral-200 dark:bg-black/20 border-b dark:border-white/10 border-neutral-200/50">
+                                        <span className="text-[10px] font-mono text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                                          {match ? match[1] : 'CODE'}
+                                        </span>
+                                        <button
+                                          onClick={() => {
+                                            setCode(String(children).replace(/\n$/, ''));
+                                            toast.success('Code pasted to editor!');
+                                          }}
+                                          className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-orange-500/10 text-[10px] font-bold text-orange-600 dark:text-orange-400 transition-colors"
+                                        >
+                                          <ClipboardPaste size={12} /> Paste to Editor
+                                        </button>
+                                      </div>
+                                      <pre className="!m-0 !rounded-none !bg-transparent p-3 overflow-x-auto text-xs text-neutral-800 dark:text-neutral-300">
+                                        <code className={className} {...props}>
+                                          {children}
+                                        </code>
+                                      </pre>
+                                    </div>
+                                  ) : (
+                                    <code className={className} {...props}>
+                                      {children}
+                                    </code>
+                                  );
+                                },
+                              }}
+                            >
+                              {problem.aiSolutions.bruteForce}
+                            </ReactMarkdown>
                           </div>
                         </div>
                       )}
 
                       {problem.aiSolutions?.better && (
                         <div className="space-y-3">
-                          <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
+                          <h3 className="text-sm font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
                             <span className="w-5 h-5 rounded bg-blue-500/20 flex items-center justify-center text-[10px]">
                               2
                             </span>{' '}
                             Better Approach
                           </h3>
-                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
-                            <ReactMarkdown>{problem.aiSolutions.better}</ReactMarkdown>
+                          <div className="prose dark:prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
+                            <ReactMarkdown
+                              components={{
+                                code({ node, inline, className, children, ...props }) {
+                                  const match = /language-(\w+)/.exec(className || '');
+                                  return !inline ? (
+                                    <div className="rounded-lg overflow-hidden border dark:border-white/10 border-neutral-200 my-4 bg-neutral-100 dark:bg-black/50">
+                                      <div className="flex items-center justify-between px-3 py-1.5 bg-neutral-200 dark:bg-black/20 border-b dark:border-white/10 border-neutral-200/50">
+                                        <span className="text-[10px] font-mono text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                                          {match ? match[1] : 'CODE'}
+                                        </span>
+                                        <button
+                                          onClick={() => {
+                                            setCode(String(children).replace(/\n$/, ''));
+                                            toast.success('Code pasted to editor!');
+                                          }}
+                                          className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-blue-500/10 text-[10px] font-bold text-blue-600 dark:text-blue-400 transition-colors"
+                                        >
+                                          <ClipboardPaste size={12} /> Paste to Editor
+                                        </button>
+                                      </div>
+                                      <pre className="!m-0 !rounded-none !bg-transparent p-3 overflow-x-auto text-xs text-neutral-800 dark:text-neutral-300">
+                                        <code className={className} {...props}>
+                                          {children}
+                                        </code>
+                                      </pre>
+                                    </div>
+                                  ) : (
+                                    <code className={className} {...props}>
+                                      {children}
+                                    </code>
+                                  );
+                                },
+                              }}
+                            >
+                              {problem.aiSolutions.better}
+                            </ReactMarkdown>
                           </div>
                         </div>
                       )}
@@ -701,8 +821,43 @@ export const ProblemDetail = () => {
                             </span>{' '}
                             Optimal Approach
                           </h3>
-                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
-                            <ReactMarkdown>{problem.aiSolutions.optimal}</ReactMarkdown>
+                          <div className="prose dark:prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
+                            <ReactMarkdown
+                              components={{
+                                code({ node, inline, className, children, ...props }) {
+                                  const match = /language-(\w+)/.exec(className || '');
+                                  return !inline ? (
+                                    <div className="rounded-lg overflow-hidden border dark:border-white/10 border-neutral-200 my-4 bg-neutral-100 dark:bg-black/50">
+                                      <div className="flex items-center justify-between px-3 py-1.5 bg-neutral-200 dark:bg-black/20 border-b dark:border-white/10 border-neutral-200/50">
+                                        <span className="text-[10px] font-mono text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                                          {match ? match[1] : 'CODE'}
+                                        </span>
+                                        <button
+                                          onClick={() => {
+                                            setCode(String(children).replace(/\n$/, ''));
+                                            toast.success('Code pasted to editor!');
+                                          }}
+                                          className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-emerald-500/10 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 transition-colors"
+                                        >
+                                          <ClipboardPaste size={12} /> Paste to Editor
+                                        </button>
+                                      </div>
+                                      <pre className="!m-0 !rounded-none !bg-transparent p-3 overflow-x-auto text-xs text-neutral-800 dark:text-neutral-300">
+                                        <code className={className} {...props}>
+                                          {children}
+                                        </code>
+                                      </pre>
+                                    </div>
+                                  ) : (
+                                    <code className={className} {...props}>
+                                      {children}
+                                    </code>
+                                  );
+                                },
+                              }}
+                            >
+                              {problem.aiSolutions.optimal}
+                            </ReactMarkdown>
                           </div>
                         </div>
                       )}
@@ -718,8 +873,8 @@ export const ProblemDetail = () => {
           {/* ── RIGHT PANEL: Editor ── */}
           <div className="flex flex-col h-full rounded-xl border border-neutral-200 dark:border-white/10 dark:bg-[#0f0f11] bg-white overflow-hidden ml-1 shadow-2xl relative group">
             {/* Toolbar */}
-            <div className="absolute top-4 right-6 left-6 z-10 flex items-center justify-between px-3 py-2 bg-neutral-900/60 backdrop-blur-xl border border-neutral-200 dark:border-white/10 rounded-2xl shadow-xl opacity-20 hover:opacity-100 transition-opacity duration-300">
-              <div className="flex bg-black/50 p-1 rounded-xl">
+            <div className="absolute top-4 right-6 left-6 z-10 flex items-center justify-between px-3 py-2 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-xl border border-neutral-200 dark:border-white/10 rounded-2xl shadow-xl opacity-20 hover:opacity-100 transition-opacity duration-300">
+              <div className="flex bg-neutral-100 dark:bg-black/50 p-1 rounded-xl">
                 {Object.keys(DEFAULT_CODE).map((lang) => (
                   <button
                     key={lang}
@@ -747,14 +902,14 @@ export const ProblemDetail = () => {
                 <button
                   onClick={handleResetCode}
                   disabled={running || submitting}
-                  className="p-2 rounded-xl bg-neutral-100 dark:bg-white/5 hover:bg-neutral-200 dark:bg-white/10 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:text-white transition-all disabled:opacity-50"
+                  className="p-2 rounded-xl bg-neutral-100 dark:bg-white/5 hover:bg-neutral-200 dark:bg-white/10 text-neutral-700 dark:text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:text-white transition-all disabled:opacity-50"
                   title="Reset Code"
                 >
                   <RotateCcw size={16} />
                 </button>
                 <button
                   onClick={() => triggerAi('')}
-                  className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 text-violet-300 font-bold text-xs transition-all"
+                  className="flex items-center gap-2 px-4 py-1.5 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/30 text-violet-700 dark:text-violet-300 font-bold text-xs transition-all"
                 >
                   <Bot size={14} /> AI
                 </button>
@@ -785,7 +940,7 @@ export const ProblemDetail = () => {
             <div className="flex-1 w-full h-full pt-16 pb-12 dark:bg-[#0f0f11] bg-white">
               <Editor
                 height="100%"
-                language={language === 'cpp' ? 'cpp' : language}
+                language={language === 'c' ? 'cpp' : language}
                 theme={theme === 'dark' ? 'vs-dark' : 'light'}
                 value={code}
                 onChange={(v) => setCode(v ?? '')}
@@ -811,7 +966,7 @@ export const ProblemDetail = () => {
             </div>
 
             {/* Status bar */}
-            <div className="absolute bottom-0 left-0 right-0 px-4 py-2 dark:bg-[#0f0f11] bg-white/90 backdrop-blur border-t border-neutral-200 dark:border-white/10 flex items-center justify-between text-[11px] text-neutral-500 font-mono">
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-2 dark:bg-[#0f0f11] bg-white/90 backdrop-blur border-t border-neutral-200 dark:border-white/10 flex items-center justify-between text-[11px] text-neutral-700 dark:text-neutral-500 font-mono">
               <div className="flex gap-4">
                 <span className="flex items-center gap-1.5">
                   <Code2 size={12} /> {LANG_LABELS[language]}{' '}
@@ -836,6 +991,7 @@ export const ProblemDetail = () => {
         isOpen={aiOpen}
         onClose={() => setAiOpen(false)}
         initialMessage={initialAiMessage}
+        onPasteCode={setCode}
       />
     </div>
   );

@@ -336,7 +336,7 @@ const DsaSheet = () => {
       {/* Header section */}
       <div className="mb-10 text-center space-y-4">
         <div className="inline-flex items-center justify-center h-16 w-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 mb-2 shadow-lg shadow-violet-500/20">
-          <Target className="text-white" size={32} />
+          <Target className="text-neutral-900 dark:text-white" size={32} />
         </div>
         <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
           MAANG 250
@@ -384,7 +384,7 @@ const DsaSheet = () => {
               {/* Topic Header */}
               <button
                 onClick={() => toggleTopic(section.topic)}
-                className="w-full flex items-center justify-between p-5 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between p-5 hover:bg-neutral-100 dark:bg-white/5 transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-violet-500/10 text-violet-400">
@@ -435,7 +435,7 @@ const DsaSheet = () => {
                     return (
                       <div
                         key={pIdx}
-                        className="flex items-center p-4 hover:bg-white/5 transition-colors group"
+                        className="flex items-center p-4 hover:bg-neutral-100 dark:bg-white/5 transition-colors group"
                       >
                         <button
                           onClick={() => toggleProblem(problemTitle)}
