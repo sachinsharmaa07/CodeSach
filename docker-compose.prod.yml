@@ -11,25 +11,19 @@ services:
     restart: unless-stopped
 
   backend:
-    build:
-      context: .
-      dockerfile: apps/backend/Dockerfile
+    # Set DOCKER_USERNAME in your .env file on the server
+    image: ${DOCKER_USERNAME}/codesach-backend:latest
     container_name: codesach_backend
     ports:
       - '5001:5000'
-    environment:
-      - MONGODB_URI=mongodb://mongodb:27017/codesach
-      - PORT=5000
-      - NODE_ENV=production
-      # Ensure you pass in your JWT_SECRET and GOOGLE OAuth credentials via an .env file or environment variables
+    env_file:
+      - .env
     depends_on:
       - mongodb
     restart: unless-stopped
 
   frontend:
-    build:
-      context: .
-      dockerfile: apps/frontend/Dockerfile
+    image: ${DOCKER_USERNAME}/codesach-frontend:latest
     container_name: codesach_frontend
     ports:
       - '80:80'
