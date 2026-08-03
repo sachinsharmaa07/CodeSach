@@ -14,9 +14,7 @@ import {
   Bot,
   Lightbulb,
   BookOpen,
-  ChevronRight,
-  Menu,
-  ChevronDown,
+  Code2,
   Info,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -45,6 +43,7 @@ const LANG_LABELS = {
 
 export const ProblemDetail = () => {
   const { slug } = useParams();
+  // eslint-disable-next-line no-unused-vars
   const { theme } = useThemeStore();
   const [problem, setProblem] = useState(null);
   const [isSolved, setIsSolved] = useState(false);
@@ -80,7 +79,7 @@ export const ProblemDetail = () => {
       })
       .catch(() => toast.error('Failed to load problem'))
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, language]);
 
   useEffect(() => {
     setSelectedTestCase(0);

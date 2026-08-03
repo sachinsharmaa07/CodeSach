@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bot, Send, Loader2, Lightbulb, MessageSquare, X } from 'lucide-react';
+import { Bot, Send, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import api from '../lib/axios';
@@ -16,6 +16,7 @@ export const AiChat = ({ problemTitle, userCode, language, isOpen, onClose, init
     if (isOpen && initialMessage) {
       handleSend(initialMessage);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, initialMessage]);
 
   useEffect(() => {

@@ -11,7 +11,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/codesa
 async function seedMissingGroqDetails() {
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('Connected to MongoDB.');
+    console.info('Connected to MongoDB.');
 
     if (!process.env.GROQ_API_KEY) {
       console.error('GROQ_API_KEY is missing in your .env file!');
@@ -31,11 +31,11 @@ async function seedMissingGroqDetails() {
       ],
     });
 
-    console.log(`Found ${problemsToUpdate.length} problems requiring Groq AI generation.`);
+    console.info(`Found ${problemsToUpdate.length} problems requiring Groq AI generation.`);
 
     for (let i = 0; i < problemsToUpdate.length; i++) {
       const p = problemsToUpdate[i];
-      console.log(`[${i + 1}/${problemsToUpdate.length}] Generating details for: ${p.title}...`);
+      console.info(`[${i + 1}/${problemsToUpdate.length}] Generating details for: ${p.title}...`);
 
       try {
         const details = await generateProblemDetails(p.title);
@@ -58,7 +58,7 @@ async function seedMissingGroqDetails() {
         p.harness = harness;
 
         await p.save();
-        console.log(`✅ Successfully updated ${p.title}`);
+        console.info(`✅ Successfully updated ${p.title}`);
 
         // Sleep for 3 seconds to avoid Groq Rate Limits
         await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -67,7 +67,7 @@ async function seedMissingGroqDetails() {
       }
     }
 
-    console.log('Finished updating problems via Groq.');
+    console.info('Finished updating problems via Groq.');
     process.exit(0);
   } catch (err) {
     console.error('Database connection error:', err);

@@ -280,11 +280,11 @@ Minimum Array End
 async function seed() {
   try {
     await mongoose.connect(MONGODB_URI);
-    console.log('Connected to MongoDB');
+    console.info('Connected to MongoDB');
 
     let admin = await User.findOne(); // just get any user
     if (!admin) {
-      console.log('No users found in db! Run this after registering at least 1 user.');
+      console.info('No users found in db! Run this after registering at least 1 user.');
       process.exit(1);
     }
 
@@ -392,13 +392,13 @@ async function seed() {
       });
     }
 
-    console.log(`Clearing existing problems from DB...`);
+    console.info(`Clearing existing problems from DB...`);
     await Problem.deleteMany({});
-    console.log(`Clearing existing submissions from DB...`);
+    console.info(`Clearing existing submissions from DB...`);
     const { Submission } = await import('./models/submission.model.js');
     await Submission.deleteMany({});
 
-    console.log(`Inserting ${problems.length} problems...`);
+    console.info(`Inserting ${problems.length} problems...`);
 
     for (const p of problems) {
       try {
@@ -408,7 +408,7 @@ async function seed() {
       }
     }
 
-    console.log('Seed complete!');
+    console.info('Seed complete!');
     process.exit(0);
   } catch (err) {
     console.error(err);

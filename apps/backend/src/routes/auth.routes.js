@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
+import { URLSearchParams } from 'url';
 import '../config/passport.js';
 import { authController } from '../controllers/auth.controller.js';
 import { protect } from '../middleware/auth.middleware.js';
@@ -15,14 +16,14 @@ router.get('/me', protect, authController.me);
 
 router.get(
   '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'], session: false })
+  passport.authenticate('google', { scope: ['profile', 'email'], session: false }),
 );
 
 router.get(
   '/google/callback',
   passport.authenticate('google', {
     session: false,
-    failureRedirect: `${env.CLIENT_URL}/login?error=oauth_failed`
+    failureRedirect: `${env.CLIENT_URL}/login?error=oauth_failed`,
   }),
   (req, res, next) => {
     try {
@@ -32,18 +33,18 @@ router.get(
         email: user.email,
         role: user.role,
         username: user.username,
-        avatar: user.avatar
+        avatar: user.avatar,
       });
       const params = new URLSearchParams({
         token: result.accessToken,
         refreshToken: result.refreshToken,
-        user: JSON.stringify(result.user)
+        user: JSON.stringify(result.user),
       });
       res.redirect(`${env.CLIENT_URL}/auth/callback?${params.toString()}`);
     } catch (err) {
       next(err);
     }
-  }
+  },
 );
 
 export default router;
