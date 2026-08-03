@@ -15,30 +15,35 @@ export const adminController = {
       if (userId) filter.user = userId;
 
       const [submissions, total] = await Promise.all([
-      Submission.find(filter).
-      populate('user', 'username email').
-      populate('problem', 'title difficulty').
-      sort({ createdAt: -1 }).
-      skip((page - 1) * pageSize).
-      limit(pageSize),
-      Submission.countDocuments(filter)]
-      );
+        Submission.find(filter)
+          .populate('user', 'username email')
+          .populate('problem', 'title difficulty')
+          .sort({ createdAt: -1 })
+          .skip((page - 1) * pageSize)
+          .limit(pageSize),
+        Submission.countDocuments(filter),
+      ]);
 
       res.json({
         status: 'success',
-        data: { submissions, pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } }
+        data: {
+          submissions,
+          pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
+        },
       });
-    } catch (err) {next(err);}
+    } catch (err) {
+      next(err);
+    }
   },
 
   async stats(req, res, next) {
     try {
       const [userCount, problemCount, submissionCount, acceptedCount] = await Promise.all([
-      User.countDocuments({ role: 'user' }),
-      Problem.countDocuments({ isActive: true }),
-      Submission.countDocuments(),
-      Submission.countDocuments({ status: 'accepted' })]
-      );
+        User.countDocuments({ role: 'user' }),
+        Problem.countDocuments({ isActive: true }),
+        Submission.countDocuments(),
+        Submission.countDocuments({ status: 'accepted' }),
+      ]);
 
       res.json({
         status: 'success',
@@ -47,19 +52,23 @@ export const adminController = {
           problemCount,
           submissionCount,
           acceptedCount,
-          acceptanceRate: submissionCount ? Math.round(acceptedCount / submissionCount * 100) : 0
-        }
+          acceptanceRate: submissionCount ? Math.round((acceptedCount / submissionCount) * 100) : 0,
+        },
       });
-    } catch (err) {next(err);}
+    } catch (err) {
+      next(err);
+    }
   },
 
   async allUsers(req, res, next) {
     try {
-      const users = await User.find({ role: 'user' }).
-      select('username email totalScore streak.current createdAt').
-      sort({ createdAt: -1 }).
-      limit(200);
+      const users = await User.find({ role: 'user' })
+        .select('username email totalScore streak.current createdAt')
+        .sort({ createdAt: -1 })
+        .limit(200);
       res.json({ status: 'success', data: { users } });
-    } catch (err) {next(err);}
-  }
+    } catch (err) {
+      next(err);
+    }
+  },
 };

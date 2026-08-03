@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/auth.store';
 const RANK_COLORS = {
   1: 'text-amber-400',
   2: 'text-neutral-300',
-  3: 'text-orange-400'
+  3: 'text-orange-400',
 };
 
 export const Leaderboard = () => {
@@ -15,9 +15,10 @@ export const Leaderboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    leaderboardApi.top(50).
-    then((res) => setRows(res.data.data.leaderboard)).
-    finally(() => setLoading(false));
+    leaderboardApi
+      .top(50)
+      .then((res) => setRows(res.data.data.leaderboard))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div className="text-neutral-500 text-sm">Loading leaderboard...</div>;
@@ -43,22 +44,31 @@ export const Leaderboard = () => {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) =>
-            <tr key={r.id} className={`border-b border-white/5 ${r.username === user?.username ? 'bg-violet-500/5' : 'hover:bg-white/[0.02]'} transition-colors`}>
-                <td className={`px-4 py-3 font-semibold ${RANK_COLORS[r.rank] ?? 'text-neutral-500'}`}>#{r.rank}</td>
+            {rows.map((r) => (
+              <tr
+                key={r.id}
+                className={`border-b border-white/5 ${r.username === user?.username ? 'bg-violet-500/5' : 'hover:bg-white/[0.02]'} transition-colors`}
+              >
+                <td
+                  className={`px-4 py-3 font-semibold ${RANK_COLORS[r.rank] ?? 'text-neutral-500'}`}
+                >
+                  #{r.rank}
+                </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
-                    {r.avatar ?
-                  <img src={r.avatar} className="h-6 w-6 rounded-full" /> :
-
-                  <div className="h-6 w-6 rounded-full bg-violet-500/20 flex items-center justify-center text-[10px] text-violet-300">
+                    {r.avatar ? (
+                      <img src={r.avatar} className="h-6 w-6 rounded-full" />
+                    ) : (
+                      <div className="h-6 w-6 rounded-full bg-violet-500/20 flex items-center justify-center text-[10px] text-violet-300">
                         {r.username[0]?.toUpperCase()}
                       </div>
-                  }
+                    )}
                     <span className="text-white font-medium">{r.username}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">{r.problemsSolved}</td>
+                <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">
+                  {r.problemsSolved}
+                </td>
                 <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">
                   <span className="inline-flex items-center gap-1">
                     <Flame size={13} className="text-orange-400" /> {r.currentStreak}
@@ -66,10 +76,10 @@ export const Leaderboard = () => {
                 </td>
                 <td className="px-4 py-3 text-right font-semibold text-white">{r.totalScore}</td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>
-    </div>);
-
+    </div>
+  );
 };

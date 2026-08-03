@@ -1,156 +1,266 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Circle, ChevronDown, ChevronRight, Loader2, Target, BarChart2 } from 'lucide-react';
+import {
+  CheckCircle2,
+  Circle,
+  ChevronDown,
+  ChevronRight,
+  Loader2,
+  Target,
+  BarChart2,
+} from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import api from '@/lib/axios';
 
 const DSA_DATA = [
   {
-    topic: "Arrays & Hashing",
+    topic: 'Arrays & Hashing',
     problems: [
-      "Contains Duplicate", "Valid Anagram", "Two Sum", "Group Anagrams",
-      "Top K Frequent Elements", "Encode and Decode Strings", "Product of Array Except Self",
-      "Valid Sudoku", "Longest Consecutive Sequence"
-    ]
+      'Contains Duplicate',
+      'Valid Anagram',
+      'Two Sum',
+      'Group Anagrams',
+      'Top K Frequent Elements',
+      'Encode and Decode Strings',
+      'Product of Array Except Self',
+      'Valid Sudoku',
+      'Longest Consecutive Sequence',
+    ],
   },
   {
-    topic: "Two Pointers",
+    topic: 'Two Pointers',
     problems: [
-      "Valid Palindrome", "Two Sum II – Input Array Is Sorted", "3Sum",
-      "Container With Most Water", "Trapping Rain Water"
-    ]
+      'Valid Palindrome',
+      'Two Sum II – Input Array Is Sorted',
+      '3Sum',
+      'Container With Most Water',
+      'Trapping Rain Water',
+    ],
   },
   {
-    topic: "Sliding Window",
+    topic: 'Sliding Window',
     problems: [
-      "Best Time to Buy And Sell Stock", "Longest Substring Without Repeating Characters",
-      "Longest Repeating Character Replacement", "Permutation In String",
-      "Minimum Window Substring", "Sliding Window Maximum"
-    ]
+      'Best Time to Buy And Sell Stock',
+      'Longest Substring Without Repeating Characters',
+      'Longest Repeating Character Replacement',
+      'Permutation In String',
+      'Minimum Window Substring',
+      'Sliding Window Maximum',
+    ],
   },
   {
-    topic: "Stack",
+    topic: 'Stack',
     problems: [
-      "Valid Parentheses", "Min Stack", "Evaluate Reverse Polish Notation",
-      "Daily Temperatures", "Car Fleet", "Largest Rectangle In Histogram"
-    ]
+      'Valid Parentheses',
+      'Min Stack',
+      'Evaluate Reverse Polish Notation',
+      'Daily Temperatures',
+      'Car Fleet',
+      'Largest Rectangle In Histogram',
+    ],
   },
   {
-    topic: "Binary Search",
+    topic: 'Binary Search',
     problems: [
-      "Binary Search", "Search a 2D Matrix", "Koko Eating Bananas",
-      "Find Minimum In Rotated Sorted Array", "Search In Rotated Sorted Array",
-      "Time Based Key Value Store", "Median of Two Sorted Arrays"
-    ]
+      'Binary Search',
+      'Search a 2D Matrix',
+      'Koko Eating Bananas',
+      'Find Minimum In Rotated Sorted Array',
+      'Search In Rotated Sorted Array',
+      'Time Based Key Value Store',
+      'Median of Two Sorted Arrays',
+    ],
   },
   {
-    topic: "Linked List",
+    topic: 'Linked List',
     problems: [
-      "Reverse Linked List", "Merge Two Sorted Lists", "Linked List Cycle",
-      "Reorder List", "Remove Nth Node From End of List", "Copy List With Random Pointer",
-      "Add Two Numbers", "Find The Duplicate Number", "LRU Cache",
-      "Merge K Sorted Lists", "Reverse Nodes In K Group"
-    ]
+      'Reverse Linked List',
+      'Merge Two Sorted Lists',
+      'Linked List Cycle',
+      'Reorder List',
+      'Remove Nth Node From End of List',
+      'Copy List With Random Pointer',
+      'Add Two Numbers',
+      'Find The Duplicate Number',
+      'LRU Cache',
+      'Merge K Sorted Lists',
+      'Reverse Nodes In K Group',
+    ],
   },
   {
-    topic: "Trees",
+    topic: 'Trees',
     problems: [
-      "Invert Binary Tree", "Maximum Depth of Binary Tree", "Diameter of Binary Tree",
-      "Balanced Binary Tree", "Same Tree", "Subtree of Another Tree",
-      "Lowest Common Ancestor of a Binary Search Tree", "Binary Tree Level Order Traversal",
-      "Binary Tree Right Side View", "Count Good Nodes In Binary Tree", "Validate Binary Search Tree",
-      "Kth Smallest Element In a BST", "Construct Binary Tree From Preorder And Inorder Traversal",
-      "Binary Tree Maximum Path Sum", "Serialize And Deserialize Binary Tree"
-    ]
+      'Invert Binary Tree',
+      'Maximum Depth of Binary Tree',
+      'Diameter of Binary Tree',
+      'Balanced Binary Tree',
+      'Same Tree',
+      'Subtree of Another Tree',
+      'Lowest Common Ancestor of a Binary Search Tree',
+      'Binary Tree Level Order Traversal',
+      'Binary Tree Right Side View',
+      'Count Good Nodes In Binary Tree',
+      'Validate Binary Search Tree',
+      'Kth Smallest Element In a BST',
+      'Construct Binary Tree From Preorder And Inorder Traversal',
+      'Binary Tree Maximum Path Sum',
+      'Serialize And Deserialize Binary Tree',
+    ],
   },
   {
-    topic: "Heap / Priority Queue",
+    topic: 'Heap / Priority Queue',
     problems: [
-      "Kth Largest Element In a Stream", "Last Stone Weight", "K Closest Points to Origin",
-      "Kth Largest Element In An Array", "Task Scheduler", "Design Twitter",
-      "Find Median From Data Stream"
-    ]
+      'Kth Largest Element In a Stream',
+      'Last Stone Weight',
+      'K Closest Points to Origin',
+      'Kth Largest Element In An Array',
+      'Task Scheduler',
+      'Design Twitter',
+      'Find Median From Data Stream',
+    ],
   },
   {
-    topic: "Backtracking",
+    topic: 'Backtracking',
     problems: [
-      "Subsets", "Combination Sum", "Combination Sum II", "Permutations",
-      "Subsets II", "Generate Parentheses", "Word Search", "Palindrome Partitioning",
-      "Letter Combinations of a Phone Number", "N Queens"
-    ]
+      'Subsets',
+      'Combination Sum',
+      'Combination Sum II',
+      'Permutations',
+      'Subsets II',
+      'Generate Parentheses',
+      'Word Search',
+      'Palindrome Partitioning',
+      'Letter Combinations of a Phone Number',
+      'N Queens',
+    ],
   },
   {
-    topic: "Tries",
+    topic: 'Tries',
     problems: [
-      "Implement Trie (Prefix Tree)", "Design Add And Search Words Data Structure", "Word Search II"
-    ]
+      'Implement Trie (Prefix Tree)',
+      'Design Add And Search Words Data Structure',
+      'Word Search II',
+    ],
   },
   {
-    topic: "Graphs",
+    topic: 'Graphs',
     problems: [
-      "Number of Islands", "Max Area of Island", "Clone Graph", "Walls And Gates",
-      "Rotting Oranges", "Pacific Atlantic Water Flow", "Surrounded Regions",
-      "Course Schedule", "Course Schedule II", "Graph Valid Tree",
-      "Number of Connected Components In An Undirected Graph", "Redundant Connection", "Word Ladder"
-    ]
+      'Number of Islands',
+      'Max Area of Island',
+      'Clone Graph',
+      'Walls And Gates',
+      'Rotting Oranges',
+      'Pacific Atlantic Water Flow',
+      'Surrounded Regions',
+      'Course Schedule',
+      'Course Schedule II',
+      'Graph Valid Tree',
+      'Number of Connected Components In An Undirected Graph',
+      'Redundant Connection',
+      'Word Ladder',
+    ],
   },
   {
-    topic: "Advanced Graphs",
+    topic: 'Advanced Graphs',
     problems: [
-      "Network Delay Time", "Reconstruct Itinerary", "Min Cost to Connect All Points",
-      "Swim In Rising Water", "Alien Dictionary", "Cheapest Flights Within K Stops"
-    ]
+      'Network Delay Time',
+      'Reconstruct Itinerary',
+      'Min Cost to Connect All Points',
+      'Swim In Rising Water',
+      'Alien Dictionary',
+      'Cheapest Flights Within K Stops',
+    ],
   },
   {
-    topic: "1-D Dynamic Programming",
+    topic: '1-D Dynamic Programming',
     problems: [
-      "Climbing Stairs", "Min Cost Climbing Stairs", "House Robber", "House Robber II",
-      "Longest Palindromic Substring", "Palindromic Substrings", "Decode Ways",
-      "Coin Change", "Maximum Product Subarray", "Word Break",
-      "Longest Increasing Subsequence", "Partition Equal Subset Sum"
-    ]
+      'Climbing Stairs',
+      'Min Cost Climbing Stairs',
+      'House Robber',
+      'House Robber II',
+      'Longest Palindromic Substring',
+      'Palindromic Substrings',
+      'Decode Ways',
+      'Coin Change',
+      'Maximum Product Subarray',
+      'Word Break',
+      'Longest Increasing Subsequence',
+      'Partition Equal Subset Sum',
+    ],
   },
   {
-    topic: "2-D Dynamic Programming",
+    topic: '2-D Dynamic Programming',
     problems: [
-      "Unique Paths", "Longest Common Subsequence", "Best Time to Buy And Sell Stock With Cooldown",
-      "Coin Change II", "Target Sum", "Interleaving String", "Longest Increasing Path In a Matrix",
-      "Distinct Subsequences", "Edit Distance", "Burst Balloons", "Regular Expression Matching"
-    ]
+      'Unique Paths',
+      'Longest Common Subsequence',
+      'Best Time to Buy And Sell Stock With Cooldown',
+      'Coin Change II',
+      'Target Sum',
+      'Interleaving String',
+      'Longest Increasing Path In a Matrix',
+      'Distinct Subsequences',
+      'Edit Distance',
+      'Burst Balloons',
+      'Regular Expression Matching',
+    ],
   },
   {
-    topic: "Greedy",
+    topic: 'Greedy',
     problems: [
-      "Maximum Subarray", "Jump Game", "Jump Game II", "Gas Station",
-      "Hand of Straights", "Merge Triplets to Form Target Triplet", "Partition Labels",
-      "Valid Parenthesis String"
-    ]
+      'Maximum Subarray',
+      'Jump Game',
+      'Jump Game II',
+      'Gas Station',
+      'Hand of Straights',
+      'Merge Triplets to Form Target Triplet',
+      'Partition Labels',
+      'Valid Parenthesis String',
+    ],
   },
   {
-    topic: "Intervals",
+    topic: 'Intervals',
     problems: [
-      "Insert Interval", "Merge Intervals", "Non Overlapping Intervals",
-      "Meeting Rooms", "Meeting Rooms II", "Minimum Interval to Include Each Query"
-    ]
+      'Insert Interval',
+      'Merge Intervals',
+      'Non Overlapping Intervals',
+      'Meeting Rooms',
+      'Meeting Rooms II',
+      'Minimum Interval to Include Each Query',
+    ],
   },
   {
-    topic: "Math & Geometry",
+    topic: 'Math & Geometry',
     problems: [
-      "Rotate Image", "Spiral Matrix", "Set Matrix Zeroes", "Happy Number",
-      "Plus One", "Pow(x, n)", "Multiply Strings", "Detect Squares"
-    ]
+      'Rotate Image',
+      'Spiral Matrix',
+      'Set Matrix Zeroes',
+      'Happy Number',
+      'Plus One',
+      'Pow(x, n)',
+      'Multiply Strings',
+      'Detect Squares',
+    ],
   },
   {
-    topic: "Bit Manipulation",
+    topic: 'Bit Manipulation',
     problems: [
-      "Single Number", "Number of 1 Bits", "Counting Bits", "Reverse Bits",
-      "Missing Number", "Sum of Two Integers", "Reverse Integer"
-    ]
-  }
+      'Single Number',
+      'Number of 1 Bits',
+      'Counting Bits',
+      'Reverse Bits',
+      'Missing Number',
+      'Sum of Two Integers',
+      'Reverse Integer',
+    ],
+  },
 ];
 
 // Helper to generate a slug from the title
-const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+const slugify = (text) =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
 
 const DsaSheet = () => {
   const { user } = useAuthStore();
@@ -161,9 +271,12 @@ const DsaSheet = () => {
 
   useEffect(() => {
     if (user) {
-      api.get('/users/progress').then(res => {
-        setCompleted(new Set(res.data.data.progress));
-      }).catch(err => console.error("Failed to load progress", err))
+      api
+        .get('/users/progress')
+        .then((res) => {
+          setCompleted(new Set(res.data.data.progress));
+        })
+        .catch((err) => console.error('Failed to load progress', err))
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -172,12 +285,12 @@ const DsaSheet = () => {
 
   const toggleProblem = async (problemTitle) => {
     if (!user) {
-      alert("Please login to track progress!");
+      alert('Please login to track progress!');
       return;
     }
     const slug = slugify(problemTitle);
     setToggling(slug);
-    
+
     // Optimistic UI update
     const newCompleted = new Set(completed);
     if (newCompleted.has(slug)) newCompleted.delete(slug);
@@ -233,16 +346,21 @@ const DsaSheet = () => {
         </p>
 
         {/* Global Progress */}
-        <div className="mt-8 max-w-xl mx-auto p-5 rounded-2xl border" style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+        <div
+          className="mt-8 max-w-xl mx-auto p-5 rounded-2xl border"
+          style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
+        >
           <div className="flex justify-between items-center mb-3">
             <div className="flex items-center gap-2">
               <BarChart2 size={18} className="text-violet-400" />
               <span className="font-semibold text-sm">Overall Progress</span>
             </div>
-            <span className="text-sm font-bold text-violet-400">{totalCompleted} / {totalProblems} ({progressPercent}%)</span>
+            <span className="text-sm font-bold text-violet-400">
+              {totalCompleted} / {totalProblems} ({progressPercent}%)
+            </span>
           </div>
           <div className="h-3 w-full bg-black/40 rounded-full overflow-hidden">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-1000 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
@@ -254,14 +372,17 @@ const DsaSheet = () => {
       <div className="space-y-4">
         {DSA_DATA.map((section, idx) => {
           const sectionTotal = section.problems.length;
-          const sectionCompleted = section.problems.filter(p => completed.has(slugify(p))).length;
+          const sectionCompleted = section.problems.filter((p) => completed.has(slugify(p))).length;
           const isExpanded = expandedTopics.has(section.topic);
 
           return (
-            <div key={idx} className="rounded-2xl border overflow-hidden transition-all duration-200" 
-                 style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+            <div
+              key={idx}
+              className="rounded-2xl border overflow-hidden transition-all duration-200"
+              style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
+            >
               {/* Topic Header */}
-              <button 
+              <button
                 onClick={() => toggleTopic(section.topic)}
                 className="w-full flex items-center justify-between p-5 hover:bg-white/5 transition-colors"
               >
@@ -271,23 +392,35 @@ const DsaSheet = () => {
                   </div>
                   <div className="text-left">
                     <h2 className="font-semibold text-lg">{section.topic}</h2>
-                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{sectionCompleted} / {sectionTotal} solved</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                      {sectionCompleted} / {sectionTotal} solved
+                    </p>
                   </div>
                 </div>
-                
+
                 {/* Mini progress circle */}
                 <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                     <path
-                      className="text-gray-800" strokeWidth="3" stroke="currentColor" fill="none"
+                      className="text-gray-800"
+                      strokeWidth="3"
+                      stroke="currentColor"
+                      fill="none"
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     />
                     <path
-                      className="text-violet-500 transition-all duration-1000" strokeWidth="3" strokeDasharray={`${(sectionCompleted/sectionTotal)*100}, 100`} strokeLinecap="round" stroke="currentColor" fill="none"
+                      className="text-violet-500 transition-all duration-1000"
+                      strokeWidth="3"
+                      strokeDasharray={`${(sectionCompleted / sectionTotal) * 100}, 100`}
+                      strokeLinecap="round"
+                      stroke="currentColor"
+                      fill="none"
                       d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     />
                   </svg>
-                  <span className="absolute text-[10px] font-bold">{Math.round((sectionCompleted/sectionTotal)*100)}%</span>
+                  <span className="absolute text-[10px] font-bold">
+                    {Math.round((sectionCompleted / sectionTotal) * 100)}%
+                  </span>
                 </div>
               </button>
 
@@ -300,7 +433,10 @@ const DsaSheet = () => {
                     const isToggling = toggling === slug;
 
                     return (
-                      <div key={pIdx} className="flex items-center p-4 hover:bg-white/5 transition-colors group">
+                      <div
+                        key={pIdx}
+                        className="flex items-center p-4 hover:bg-white/5 transition-colors group"
+                      >
                         <button
                           onClick={() => toggleProblem(problemTitle)}
                           disabled={isToggling}
@@ -315,12 +451,18 @@ const DsaSheet = () => {
                           )}
                         </button>
                         <div className="flex-1">
-                          <Link to={`/problems/${slug}`} className="font-medium text-sm hover:text-violet-400 transition-colors">
+                          <Link
+                            to={`/problems/${slug}`}
+                            className="font-medium text-sm hover:text-violet-400 transition-colors"
+                          >
                             {problemTitle}
                           </Link>
                         </div>
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Link to={`/problems/${slug}`} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-violet-600/20 text-violet-300 hover:bg-violet-600/30">
+                          <Link
+                            to={`/problems/${slug}`}
+                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-violet-600/20 text-violet-300 hover:bg-violet-600/30"
+                          >
                             Solve
                           </Link>
                         </div>

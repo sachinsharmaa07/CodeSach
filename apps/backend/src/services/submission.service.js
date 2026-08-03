@@ -29,15 +29,24 @@ export const submissionService = {
     if (!problem) throw new AppError('Problem not found', 404);
     if (!LANGUAGE_IDS[language]) throw new AppError('Unsupported language', 400);
 
-    const harness = problem.harness?.get ? problem.harness.get(language) : problem.harness?.[language];
-    const results = await judge0Service.runTests(code, language, problem.testCases, harness || null);
+    const harness = problem.harness?.get
+      ? problem.harness.get(language)
+      : problem.harness?.[language];
+    const results = await judge0Service.runTests(
+      code,
+      language,
+      problem.testCases,
+      harness || null,
+    );
     const allPassed = results.every((r) => r.passed);
     const maxRuntime = Math.max(...results.map((r) => r.runtime), 0);
 
     let status = 'wrong_answer';
     if (allPassed) status = 'accepted';
-    else if (results.some((r) => r.statusDescription === 'Compilation Error')) status = 'compile_error';
-    else if (results.some((r) => /Runtime Error/.test(r.statusDescription))) status = 'runtime_error';
+    else if (results.some((r) => r.statusDescription === 'Compilation Error'))
+      status = 'compile_error';
+    else if (results.some((r) => /Runtime Error/.test(r.statusDescription)))
+      status = 'runtime_error';
 
     let marksAwarded = 0;
 
@@ -56,13 +65,23 @@ export const submissionService = {
         const last = firstSolveResult.streak.lastSolvedDate
           ? new Date(firstSolveResult.streak.lastSolvedDate).toISOString().slice(0, 10)
           : null;
-        const nextCurrent = last === today ? firstSolveResult.streak.current
-          : (last && isYesterday(last) ? firstSolveResult.streak.current + 1 : 1);
+        const nextCurrent =
+          last === today
+            ? firstSolveResult.streak.current
+            : last && isYesterday(last)
+              ? firstSolveResult.streak.current + 1
+              : 1;
         const nextLongest = Math.max(firstSolveResult.streak.longest, nextCurrent);
 
         await User.updateOne(
           { _id: userId },
-          { $set: { 'streak.current': nextCurrent, 'streak.longest': nextLongest, 'streak.lastSolvedDate': new Date() } },
+          {
+            $set: {
+              'streak.current': nextCurrent,
+              'streak.longest': nextLongest,
+              'streak.lastSolvedDate': new Date(),
+            },
+          },
         );
       }
 
@@ -72,7 +91,10 @@ export const submissionService = {
         { $inc: { 'dailyActivity.$.count': 1 } },
       );
       if (incResult.matchedCount === 0) {
-        await User.updateOne({ _id: userId }, { $push: { dailyActivity: { date: today, count: 1 } } });
+        await User.updateOne(
+          { _id: userId },
+          { $push: { dailyActivity: { date: today, count: 1 } } },
+        );
       }
     }
 
@@ -88,7 +110,13 @@ export const submissionService = {
       status,
       runtime: maxRuntime,
       marksAwarded,
-      testResults: results.map(({ passed, input, expected, actual, runtime }) => ({ passed, input, expected, actual, runtime })),
+      testResults: results.map(({ passed, input, expected, actual, runtime }) => ({
+        passed,
+        input,
+        expected,
+        actual,
+        runtime,
+      })),
     });
 
     const freshUser = await User.findById(userId).select('streak').lean();

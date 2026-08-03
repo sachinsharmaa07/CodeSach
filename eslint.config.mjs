@@ -21,7 +21,7 @@ export default tseslint.config(
         exports: 'readonly',
         fetch: 'readonly',
         AbortSignal: 'readonly',
-      }
+      },
     },
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],

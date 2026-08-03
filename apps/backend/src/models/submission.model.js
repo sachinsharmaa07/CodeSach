@@ -7,11 +7,17 @@ const submissionSchema = new Schema(
     code: { type: String, required: true },
     language: { type: String, required: true },
     languageId: { type: Number, required: true },
-    status: { type: String, enum: ['pending', 'accepted', 'wrong_answer', 'time_limit', 'runtime_error', 'compile_error'], default: 'pending' },
+    status: {
+      type: String,
+      enum: ['pending', 'accepted', 'wrong_answer', 'time_limit', 'runtime_error', 'compile_error'],
+      default: 'pending',
+    },
     runtime: { type: Number, default: 0 },
     memory: { type: Number, default: 0 },
     marksAwarded: { type: Number, default: 0 },
-    testResults: [{ passed: Boolean, input: String, expected: String, actual: String, runtime: Number }],
+    testResults: [
+      { passed: Boolean, input: String, expected: String, actual: String, runtime: Number },
+    ],
   },
   { timestamps: true },
 );

@@ -8,7 +8,7 @@ passport.use(
     {
       clientID: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      callbackURL: env.GOOGLE_CALLBACK_URL
+      callbackURL: env.GOOGLE_CALLBACK_URL,
     },
     async (_accessToken, _refreshToken, profile, done) => {
       try {
@@ -20,12 +20,12 @@ passport.use(
         if (!user) {
           user = await User.create({
             username:
-            profile.displayName.replace(/\s+/g, '').toLowerCase().slice(0, 25) +
-            Math.floor(Math.random() * 999),
+              profile.displayName.replace(/\s+/g, '').toLowerCase().slice(0, 25) +
+              Math.floor(Math.random() * 999),
             email,
             password: Math.random().toString(36) + Math.random().toString(36),
             avatar: profile.photos?.[0]?.value ?? '',
-            role: 'user'
+            role: 'user',
           });
         } else if (!user.avatar && profile.photos?.[0]?.value) {
           user.avatar = profile.photos[0].value;
@@ -36,8 +36,8 @@ passport.use(
       } catch (err) {
         return done(err, false);
       }
-    }
-  )
+    },
+  ),
 );
 
 export default passport;

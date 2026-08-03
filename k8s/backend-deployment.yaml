@@ -22,9 +22,9 @@ spec:
             - containerPort: 5000
           env:
             - name: MONGODB_URI
-              value: "mongodb://mongodb:27017/codesach"
+              value: 'mongodb://mongodb:27017/codesach'
             - name: PORT
-              value: "5000"
+              value: '5000'
             - name: NODE_ENV
-              value: "production"
+              value: 'production'
             # Add JWT_SECRET and GOOGLE credentials here as needed

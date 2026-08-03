@@ -8,7 +8,9 @@ import '@/index.css';
 
 document.documentElement.classList.toggle('dark', useThemeStore.getState().theme === 'dark');
 
-const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 60000, retry: 1 } } });
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { staleTime: 60000, retry: 1 } },
+});
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

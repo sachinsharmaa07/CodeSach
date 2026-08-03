@@ -14,8 +14,8 @@ export const useAuthStore = create()(
       logout: () => {
         localStorage.removeItem('token');
         set({ user: null, token: null, isAuthenticated: false });
-      }
+      },
     }),
-    { name: 'codesach-auth' }
-  )
+    { name: 'codesach-auth' },
+  ),
 );

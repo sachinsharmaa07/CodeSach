@@ -16,8 +16,8 @@ export const ThemeToggle = () => {
       aria-label="Toggle theme"
       className="rounded-lg p-2 transition-colors"
       style={{ color: 'var(--color-text-muted)' }}
-      onMouseEnter={e => e.currentTarget.style.color = 'var(--color-text)'}
-      onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}
+      onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-text)')}
+      onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text-muted)')}
       title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}

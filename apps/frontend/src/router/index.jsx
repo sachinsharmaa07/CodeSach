@@ -9,18 +9,34 @@ import { Register } from '@/pages/Register';
 import { NotFound } from '@/pages/NotFound';
 import { AuthCallback } from '@/pages/AuthCallback';
 
-const ProblemDetail    = lazy(() => import('@/pages/ProblemDetail').then(m => ({ default: m.ProblemDetail })));
-const Profile          = lazy(() => import('@/pages/Profile').then(m => ({ default: m.Profile })));
-const Leaderboard      = lazy(() => import('@/pages/Leaderboard').then(m => ({ default: m.Leaderboard })));
-const DsaSheet         = lazy(() => import('@/pages/DsaSheet').then(m => ({ default: m.default })));
-const AdminDashboard   = lazy(() => import('@/pages/admin/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
-const AddProblem       = lazy(() => import('@/pages/admin/AddProblem').then(m => ({ default: m.AddProblem })));
-const AdminProblems    = lazy(() => import('@/pages/admin/AdminProblems').then(m => ({ default: m.AdminProblems })));
-const EditProblem      = lazy(() => import('@/pages/admin/EditProblem').then(m => ({ default: m.EditProblem })));
-const AdminSubmissions = lazy(() => import('@/pages/admin/AdminSubmissions').then(m => ({ default: m.AdminSubmissions })));
+const ProblemDetail = lazy(() =>
+  import('@/pages/ProblemDetail').then((m) => ({ default: m.ProblemDetail })),
+);
+const Profile = lazy(() => import('@/pages/Profile').then((m) => ({ default: m.Profile })));
+const Leaderboard = lazy(() =>
+  import('@/pages/Leaderboard').then((m) => ({ default: m.Leaderboard })),
+);
+const DsaSheet = lazy(() => import('@/pages/DsaSheet').then((m) => ({ default: m.default })));
+const AdminDashboard = lazy(() =>
+  import('@/pages/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard })),
+);
+const AddProblem = lazy(() =>
+  import('@/pages/admin/AddProblem').then((m) => ({ default: m.AddProblem })),
+);
+const AdminProblems = lazy(() =>
+  import('@/pages/admin/AdminProblems').then((m) => ({ default: m.AdminProblems })),
+);
+const EditProblem = lazy(() =>
+  import('@/pages/admin/EditProblem').then((m) => ({ default: m.EditProblem })),
+);
+const AdminSubmissions = lazy(() =>
+  import('@/pages/admin/AdminSubmissions').then((m) => ({ default: m.AdminSubmissions })),
+);
 
 const withSuspense = (el) => (
-  <Suspense fallback={<div className="text-neutral-500 text-sm p-8">Loading...</div>}>{el}</Suspense>
+  <Suspense fallback={<div className="text-neutral-500 text-sm p-8">Loading...</div>}>
+    {el}
+  </Suspense>
 );
 
 const router = createBrowserRouter([

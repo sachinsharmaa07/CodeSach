@@ -15,7 +15,13 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('@monaco-editor')) return 'monaco';
           if (id.includes('recharts')) return 'charts';
-          if (id.includes('react-dom') || id.includes('react-router-dom') || id.includes('@tanstack/react-query') || id.includes('zustand')) return 'vendor';
+          if (
+            id.includes('react-dom') ||
+            id.includes('react-router-dom') ||
+            id.includes('@tanstack/react-query') ||
+            id.includes('zustand')
+          )
+            return 'vendor';
         },
       },
     },

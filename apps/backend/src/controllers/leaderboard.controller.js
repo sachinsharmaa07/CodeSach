@@ -4,10 +4,10 @@ export const leaderboardController = {
   async top(req, res, next) {
     try {
       const limit = Math.min(Number(req.query.limit) || 50, 100);
-      const users = await User.find({ role: 'user' }).
-      select('username avatar totalScore streak.current streak.longest solvedProblems').
-      sort({ totalScore: -1 }).
-      limit(limit);
+      const users = await User.find({ role: 'user' })
+        .select('username avatar totalScore streak.current streak.longest solvedProblems')
+        .sort({ totalScore: -1 })
+        .limit(limit);
 
       const leaderboard = users.map((u, i) => ({
         rank: i + 1,
@@ -17,10 +17,12 @@ export const leaderboardController = {
         totalScore: u.totalScore,
         problemsSolved: u.solvedProblems.length,
         currentStreak: u.streak.current,
-        longestStreak: u.streak.longest
+        longestStreak: u.streak.longest,
       }));
 
       res.json({ status: 'success', data: { leaderboard } });
-    } catch (err) {next(err);}
-  }
+    } catch (err) {
+      next(err);
+    }
+  },
 };

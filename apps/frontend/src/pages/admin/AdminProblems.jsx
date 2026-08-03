@@ -13,13 +13,21 @@ export const AdminProblems = () => {
 
   const load = () => {
     setLoading(true);
-    problemApi.list().then((res) => setProblems(res.data.data.problems)).finally(() => setLoading(false));
+    problemApi
+      .list()
+      .then((res) => setProblems(res.data.data.problems))
+      .finally(() => setLoading(false));
   };
 
-  useEffect(() => {load();}, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const handleDelete = async (id, title) => {
-    if (!confirm(`Deactivate "${title}"? It will be hidden from users but not permanently deleted.`)) return;
+    if (
+      !confirm(`Deactivate "${title}"? It will be hidden from users but not permanently deleted.`)
+    )
+      return;
     try {
       await api.delete(`/problems/${id}`);
       toast.success('Problem deactivated');
@@ -33,7 +41,11 @@ export const AdminProblems = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-white">Manage Problems</h1>
-        <Link to="/admin/problems/new"><Button size="sm"><Plus size={14} /> Add Problem</Button></Link>
+        <Link to="/admin/problems/new">
+          <Button size="sm">
+            <Plus size={14} /> Add Problem
+          </Button>
+        </Link>
       </div>
 
       <div className="rounded-xl border border-white/5 overflow-hidden">
@@ -48,31 +60,48 @@ export const AdminProblems = () => {
             </tr>
           </thead>
           <tbody>
-            {loading ?
-            <tr><td colSpan={5} className="px-4 py-6 text-center text-neutral-500">Loading...</td></tr> :
-            problems.map((p) =>
-            <tr key={p._id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                <td className="px-4 py-3 text-white font-medium">{p.title}</td>
-                <td className="px-4 py-3"><Badge label={p.difficulty} variant={p.difficulty} /></td>
-                <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">{p.marks}</td>
-                <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">
-                  {p.acceptedSubmissions}/{p.totalSubmissions}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex justify-end gap-2">
-                    <Link to={`/admin/problems/${p._id}/edit`}>
-                      <Button size="sm" variant="ghost"><Pencil size={13} /></Button>
-                    </Link>
-                    <Button size="sm" variant="danger" onClick={() => handleDelete(p._id, p.title)}>
-                      <Trash2 size={13} />
-                    </Button>
-                  </div>
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="px-4 py-6 text-center text-neutral-500">
+                  Loading...
                 </td>
               </tr>
+            ) : (
+              problems.map((p) => (
+                <tr
+                  key={p._id}
+                  className="border-b border-white/5 hover:bg-white/[0.02] transition-colors"
+                >
+                  <td className="px-4 py-3 text-white font-medium">{p.title}</td>
+                  <td className="px-4 py-3">
+                    <Badge label={p.difficulty} variant={p.difficulty} />
+                  </td>
+                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">{p.marks}</td>
+                  <td className="px-4 py-3 hidden sm:table-cell text-neutral-400">
+                    {p.acceptedSubmissions}/{p.totalSubmissions}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-2">
+                      <Link to={`/admin/problems/${p._id}/edit`}>
+                        <Button size="sm" variant="ghost">
+                          <Pencil size={13} />
+                        </Button>
+                      </Link>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={() => handleDelete(p._id, p.title)}
+                      >
+                        <Trash2 size={13} />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
       </div>
-    </div>);
-
+    </div>
+  );
 };

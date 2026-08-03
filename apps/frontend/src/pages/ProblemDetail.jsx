@@ -43,7 +43,6 @@ const LANG_LABELS = {
 
 export const ProblemDetail = () => {
   const { slug } = useParams();
-  // eslint-disable-next-line no-unused-vars
   const { theme } = useThemeStore();
   const [problem, setProblem] = useState(null);
   const [isSolved, setIsSolved] = useState(false);
@@ -153,7 +152,7 @@ export const ProblemDetail = () => {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-950 text-neutral-400">
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-950 text-neutral-500 dark:text-neutral-400">
         <Loader2 size={24} className="animate-spin text-violet-500 mr-2" />
         <span className="text-sm font-medium">Loading workspace...</span>
       </div>
@@ -161,7 +160,7 @@ export const ProblemDetail = () => {
 
   if (!problem)
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-950 text-neutral-400">
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)] bg-neutral-950 text-neutral-500 dark:text-neutral-400">
         <span className="text-sm">Problem not found.</span>
       </div>
     );
@@ -182,13 +181,13 @@ export const ProblemDetail = () => {
   ];
 
   return (
-    <div className="h-[calc(100vh-4rem)] w-full bg-[#0a0a0a] p-2 font-sans overflow-hidden">
+    <div className="h-[calc(100vh-4rem)] w-full dark:bg-[#0a0a0a] bg-neutral-50 p-2 font-sans overflow-hidden">
       <Allotment>
         <Allotment.Pane minSize={350} preferredSize="40%">
           {/* ── LEFT PANEL ─── */}
-          <div className="flex flex-col h-full rounded-xl border border-white/10 bg-[#0f0f11] overflow-hidden mr-1 shadow-2xl relative">
+          <div className="flex flex-col h-full rounded-xl border border-neutral-200 dark:border-white/10 dark:bg-[#0f0f11] bg-white overflow-hidden mr-1 shadow-2xl relative">
             {/* Tabs Header */}
-            <div className="flex border-b border-white/5 bg-white/[0.02] p-2 gap-1 overflow-x-auto no-scrollbar shrink-0">
+            <div className="flex border-b border-neutral-100 dark:border-white/5 bg-neutral-50 dark:bg-white/[0.02] p-2 gap-1 overflow-x-auto no-scrollbar shrink-0">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -199,14 +198,14 @@ export const ProblemDetail = () => {
                     className={cn(
                       'relative px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors whitespace-nowrap',
                       isActive
-                        ? 'text-white'
-                        : 'text-neutral-400 hover:text-neutral-200 hover:bg-white/5',
+                        ? 'text-neutral-900 dark:text-white'
+                        : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-200 hover:bg-neutral-100 dark:bg-white/5',
                     )}
                   >
                     {isActive && (
                       <motion.div
                         layoutId="active-tab"
-                        className="absolute inset-0 bg-white/10 rounded-lg"
+                        className="absolute inset-0 bg-neutral-200 dark:bg-white/10 rounded-lg"
                         transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -244,7 +243,7 @@ export const ProblemDetail = () => {
                   {/* Header */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between flex-wrap gap-2">
-                      <h1 className="text-2xl font-bold text-white tracking-tight">
+                      <h1 className="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">
                         {problem.title}
                       </h1>
                       {isSolved && (
@@ -253,9 +252,9 @@ export const ProblemDetail = () => {
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 text-xs font-medium text-neutral-400 flex-wrap">
+                    <div className="flex items-center gap-3 text-xs font-medium text-neutral-500 dark:text-neutral-400 flex-wrap">
                       <Badge label={problem.difficulty} variant={problem.difficulty} />
-                      <span className="bg-white/5 px-2 py-1 rounded-md">
+                      <span className="bg-neutral-100 dark:bg-white/5 px-2 py-1 rounded-md">
                         Acceptance:{' '}
                         {problem.totalSubmissions > 0
                           ? Math.round(
@@ -264,7 +263,7 @@ export const ProblemDetail = () => {
                           : 0}
                         %
                       </span>
-                      <span className="bg-white/5 px-2 py-1 rounded-md">
+                      <span className="bg-neutral-100 dark:bg-white/5 px-2 py-1 rounded-md">
                         Time Limit: {problem.timeLimit || 2000}ms
                       </span>
                     </div>
@@ -305,7 +304,7 @@ export const ProblemDetail = () => {
                   </div>
 
                   {/* Description */}
-                  <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-white/5 prose-pre:border-white/10 prose-pre:border text-neutral-300 leading-relaxed">
+                  <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300 leading-relaxed">
                     <ReactMarkdown>{problem.description}</ReactMarkdown>
                   </div>
 
@@ -313,7 +312,7 @@ export const ProblemDetail = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Parameters */}
                     {problem.parameters?.length > 0 && (
-                      <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4">
+                      <div className="bg-neutral-50 dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-3 text-neutral-200 font-semibold text-sm">
                           <Code2 size={16} className="text-violet-400" /> Parameters
                         </div>
@@ -326,7 +325,9 @@ export const ProblemDetail = () => {
                                 </span>
                                 <span className="text-neutral-500 italic">{p.type}</span>
                               </div>
-                              <span className="text-neutral-400 ml-1">{p.description}</span>
+                              <span className="text-neutral-500 dark:text-neutral-400 ml-1">
+                                {p.description}
+                              </span>
                             </li>
                           ))}
                         </ul>
@@ -335,7 +336,7 @@ export const ProblemDetail = () => {
 
                     {/* Return Value */}
                     {problem.returnValue && (
-                      <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4">
+                      <div className="bg-neutral-50 dark:bg-white/[0.02] border border-neutral-200 dark:border-white/10 rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-3 text-neutral-200 font-semibold text-sm">
                           <CheckCircle size={16} className="text-emerald-400" /> Returns
                         </div>
@@ -343,7 +344,7 @@ export const ProblemDetail = () => {
                           <span className="font-mono bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/20 block w-max mb-1.5">
                             {problem.returnValue.type}
                           </span>
-                          <span className="text-neutral-400 ml-1">
+                          <span className="text-neutral-500 dark:text-neutral-400 ml-1">
                             {problem.returnValue.description}
                           </span>
                         </div>
@@ -387,8 +388,8 @@ export const ProblemDetail = () => {
                             className={cn(
                               'px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap',
                               selectedTestCase === i
-                                ? 'bg-white/10 text-white shadow-sm'
-                                : 'bg-transparent text-neutral-500 hover:bg-white/5 hover:text-neutral-300',
+                                ? 'bg-neutral-200 dark:bg-white/10 text-neutral-900 dark:text-white shadow-sm'
+                                : 'bg-transparent text-neutral-500 hover:bg-neutral-100 dark:bg-white/5 hover:text-neutral-700 dark:text-neutral-300',
                             )}
                           >
                             Case {i + 1}
@@ -407,15 +408,15 @@ export const ProblemDetail = () => {
                           className="space-y-4"
                         >
                           <div>
-                            <div className="text-xs font-semibold text-neutral-400 mb-2 pl-1">
+                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
                               Input
                             </div>
-                            <pre className="p-4 rounded-xl bg-white/[0.03] border border-white/10 text-neutral-300 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
+                            <pre className="p-4 rounded-xl bg-white/[0.03] border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-neutral-300 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
                               {visibleTestCases[selectedTestCase].input}
                             </pre>
                           </div>
                           <div>
-                            <div className="text-xs font-semibold text-neutral-400 mb-2 pl-1">
+                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
                               Expected Output
                             </div>
                             <pre className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
@@ -437,7 +438,7 @@ export const ProblemDetail = () => {
                   className="flex flex-col h-full"
                 >
                   {(running || submitting) && (
-                    <div className="flex flex-col items-center justify-center h-full gap-4 text-neutral-400">
+                    <div className="flex flex-col items-center justify-center h-full gap-4 text-neutral-500 dark:text-neutral-400">
                       <div className="relative flex items-center justify-center w-16 h-16 bg-violet-500/10 rounded-2xl border border-violet-500/20">
                         <Loader2 size={28} className="animate-spin text-violet-500" />
                       </div>
@@ -451,7 +452,9 @@ export const ProblemDetail = () => {
                     <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
                       <Terminal size={48} className="text-neutral-700" />
                       <div>
-                        <p className="text-neutral-300 font-medium">No Results Yet</p>
+                        <p className="text-neutral-700 dark:text-neutral-300 font-medium">
+                          No Results Yet
+                        </p>
                         <p className="text-xs text-neutral-500 mt-1">
                           Run your code to compile and evaluate test cases.
                         </p>
@@ -489,7 +492,7 @@ export const ProblemDetail = () => {
                           >
                             {allPassed ? 'Accepted!' : 'Wrong Answer'}
                           </h2>
-                          <p className="text-sm text-neutral-400 mt-0.5">
+                          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
                             {passedCount} / {results.length} testcases passed
                           </p>
                         </div>
@@ -507,7 +510,7 @@ export const ProblemDetail = () => {
                                 ? r.passed
                                   ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
                                   : 'bg-rose-500/20 border-rose-500/30 text-rose-300'
-                                : 'bg-white/5 border-transparent text-neutral-500 hover:bg-white/10',
+                                : 'bg-neutral-100 dark:bg-white/5 border-transparent text-neutral-500 hover:bg-neutral-200 dark:bg-white/10',
                             )}
                           >
                             <div
@@ -545,17 +548,17 @@ export const ProblemDetail = () => {
                               <>
                                 {results[selectedResultCase].input !== '(hidden)' && (
                                   <div>
-                                    <div className="text-xs font-semibold text-neutral-400 mb-2 pl-1">
+                                    <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
                                       Input
                                     </div>
-                                    <pre className="p-3 rounded-xl bg-white/[0.03] border border-white/10 text-neutral-300 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
+                                    <pre className="p-3 rounded-xl bg-white/[0.03] border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-neutral-300 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
                                       {results[selectedResultCase].input}
                                     </pre>
                                   </div>
                                 )}
                                 <div className="grid grid-cols-1 gap-4">
                                   <div>
-                                    <div className="text-xs font-semibold text-neutral-400 mb-2 pl-1">
+                                    <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-2 pl-1">
                                       Expected Output
                                     </div>
                                     <pre className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner whitespace-pre-wrap">
@@ -616,7 +619,7 @@ export const ProblemDetail = () => {
                             </span>{' '}
                             Brute Force
                           </h3>
-                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-white/5 prose-pre:border-white/10 prose-pre:border text-neutral-300">
+                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
                             <ReactMarkdown>{problem.aiSolutions.bruteForce}</ReactMarkdown>
                           </div>
                         </div>
@@ -630,7 +633,7 @@ export const ProblemDetail = () => {
                             </span>{' '}
                             Better Approach
                           </h3>
-                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-white/5 prose-pre:border-white/10 prose-pre:border text-neutral-300">
+                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
                             <ReactMarkdown>{problem.aiSolutions.better}</ReactMarkdown>
                           </div>
                         </div>
@@ -644,7 +647,7 @@ export const ProblemDetail = () => {
                             </span>{' '}
                             Optimal Approach
                           </h3>
-                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-white/5 prose-pre:border-white/10 prose-pre:border text-neutral-300">
+                          <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-neutral-100 dark:bg-white/5 prose-pre:border-neutral-200 dark:border-white/10 prose-pre:border text-neutral-700 dark:text-neutral-300">
                             <ReactMarkdown>{problem.aiSolutions.optimal}</ReactMarkdown>
                           </div>
                         </div>
@@ -659,9 +662,9 @@ export const ProblemDetail = () => {
 
         <Allotment.Pane minSize={400}>
           {/* ── RIGHT PANEL: Editor ── */}
-          <div className="flex flex-col h-full rounded-xl border border-white/10 bg-[#0f0f11] overflow-hidden ml-1 shadow-2xl relative group">
+          <div className="flex flex-col h-full rounded-xl border border-neutral-200 dark:border-white/10 dark:bg-[#0f0f11] bg-white overflow-hidden ml-1 shadow-2xl relative group">
             {/* Toolbar */}
-            <div className="absolute top-4 right-6 left-6 z-10 flex items-center justify-between px-3 py-2 bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl opacity-20 hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute top-4 right-6 left-6 z-10 flex items-center justify-between px-3 py-2 bg-neutral-900/60 backdrop-blur-xl border border-neutral-200 dark:border-white/10 rounded-2xl shadow-xl opacity-20 hover:opacity-100 transition-opacity duration-300">
               <div className="flex bg-black/50 p-1 rounded-xl">
                 {Object.keys(DEFAULT_CODE).map((lang) => (
                   <button
@@ -669,13 +672,15 @@ export const ProblemDetail = () => {
                     onClick={() => switchLanguage(lang)}
                     className={cn(
                       'px-3 py-1.5 rounded-lg text-xs font-bold transition-all relative',
-                      language === lang ? 'text-white' : 'text-neutral-500 hover:text-neutral-300',
+                      language === lang
+                        ? 'text-neutral-900 dark:text-white'
+                        : 'text-neutral-500 hover:text-neutral-700 dark:text-neutral-300',
                     )}
                   >
                     {language === lang && (
                       <motion.div
                         layoutId="active-lang"
-                        className="absolute inset-0 bg-white/10 rounded-lg shadow-sm"
+                        className="absolute inset-0 bg-neutral-200 dark:bg-white/10 rounded-lg shadow-sm"
                         transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -688,7 +693,7 @@ export const ProblemDetail = () => {
                 <button
                   onClick={handleResetCode}
                   disabled={running || submitting}
-                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-all disabled:opacity-50"
+                  className="p-2 rounded-xl bg-neutral-100 dark:bg-white/5 hover:bg-neutral-200 dark:bg-white/10 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:text-white transition-all disabled:opacity-50"
                   title="Reset Code"
                 >
                   <RotateCcw size={16} />
@@ -702,7 +707,7 @@ export const ProblemDetail = () => {
                 <button
                   onClick={handleRun}
                   disabled={running || submitting}
-                  className="flex items-center gap-2 px-5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-all disabled:opacity-50"
+                  className="flex items-center gap-2 px-5 py-1.5 rounded-xl bg-neutral-200 dark:bg-white/10 hover:bg-white/20 text-neutral-900 dark:text-white font-bold text-xs transition-all disabled:opacity-50"
                 >
                   {running ? (
                     <Loader2 size={14} className="animate-spin" />
@@ -723,11 +728,11 @@ export const ProblemDetail = () => {
             </div>
 
             {/* Monaco Editor */}
-            <div className="flex-1 w-full h-full pt-16 pb-12 bg-[#0f0f11]">
+            <div className="flex-1 w-full h-full pt-16 pb-12 dark:bg-[#0f0f11] bg-white">
               <Editor
                 height="100%"
                 language={language === 'cpp' ? 'cpp' : language}
-                theme="vs-dark"
+                theme={theme === 'dark' ? 'vs-dark' : 'light'}
                 value={code}
                 onChange={(v) => setCode(v ?? '')}
                 options={{
@@ -752,7 +757,7 @@ export const ProblemDetail = () => {
             </div>
 
             {/* Status bar */}
-            <div className="absolute bottom-0 left-0 right-0 px-4 py-2 bg-[#0f0f11]/90 backdrop-blur border-t border-white/10 flex items-center justify-between text-[11px] text-neutral-500 font-mono">
+            <div className="absolute bottom-0 left-0 right-0 px-4 py-2 dark:bg-[#0f0f11] bg-white/90 backdrop-blur border-t border-neutral-200 dark:border-white/10 flex items-center justify-between text-[11px] text-neutral-500 font-mono">
               <div className="flex gap-4">
                 <span className="flex items-center gap-1.5">
                   <Code2 size={12} /> {LANG_LABELS[language]}{' '}

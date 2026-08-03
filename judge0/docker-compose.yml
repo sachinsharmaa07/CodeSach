@@ -1,4 +1,4 @@
-version: "3.7"
+version: '3.7'
 
 services:
   server:
@@ -6,7 +6,7 @@ services:
     volumes:
       - ./judge0.conf:/judge0.conf:ro
     ports:
-      - "2358:2358"
+      - '2358:2358'
     privileged: true
     restart: always
     depends_on:
@@ -16,7 +16,7 @@ services:
 
   workers:
     image: judge0/judge0:1.13.1
-    command: ["./scripts/workers"]
+    command: ['./scripts/workers']
     volumes:
       - ./judge0.conf:/judge0.conf:ro
     privileged: true
@@ -35,7 +35,8 @@ services:
 
   redis:
     image: redis:7.2.4
-    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:-judge0redis}"]
+    command:
+      ['redis-server', '--appendonly', 'yes', '--requirepass', '${REDIS_PASSWORD:-judge0redis}']
     env_file: judge0.conf
     volumes:
       - judge0-redis:/data

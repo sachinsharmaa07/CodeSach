@@ -8,12 +8,12 @@ const router = Router();
 router.get('/progress', protect, async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id, 'dsaSheetProgress solvedProblems').lean();
-    res.json({ 
-      status: 'success', 
-      data: { 
+    res.json({
+      status: 'success',
+      data: {
         progress: user.dsaSheetProgress || [],
-        solvedProblems: user.solvedProblems || []
-      } 
+        solvedProblems: user.solvedProblems || [],
+      },
     });
   } catch (err) {
     next(err);
@@ -24,17 +24,18 @@ router.get('/progress', protect, async (req, res, next) => {
 router.post('/progress/toggle', protect, async (req, res, next) => {
   try {
     const { problemId } = req.body;
-    if (!problemId) return res.status(400).json({ status: 'error', message: 'problemId is required' });
+    if (!problemId)
+      return res.status(400).json({ status: 'error', message: 'problemId is required' });
 
     const user = await User.findById(req.user._id);
     const progress = user.dsaSheetProgress || [];
-    
+
     if (progress.includes(problemId)) {
-      user.dsaSheetProgress = progress.filter(id => id !== problemId);
+      user.dsaSheetProgress = progress.filter((id) => id !== problemId);
     } else {
       user.dsaSheetProgress.push(problemId);
     }
-    
+
     await user.save();
     res.json({ status: 'success', data: { progress: user.dsaSheetProgress } });
   } catch (err) {
@@ -49,10 +50,9 @@ router.get('/search', async (req, res, next) => {
     const limit = Math.min(parseInt(req.query.limit) || 5, 10);
     if (!q) return res.json({ status: 'success', data: { users: [] } });
 
-    const users = await User.find(
-      { username: { $regex: q, $options: 'i' } },
-      'username _id'
-    ).limit(limit).lean();
+    const users = await User.find({ username: { $regex: q, $options: 'i' } }, 'username _id')
+      .limit(limit)
+      .lean();
 
     res.json({ status: 'success', data: { users } });
   } catch (err) {

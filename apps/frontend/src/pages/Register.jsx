@@ -39,15 +39,23 @@ export const Register = () => {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4">
-      <div className="w-full max-w-md space-y-8 rounded-2xl p-8 border"
-           style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+      <div
+        className="w-full max-w-md space-y-8 rounded-2xl p-8 border"
+        style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
+      >
         <div>
-          <h1 className="mt-2 text-center text-3xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
+          <h1
+            className="mt-2 text-center text-3xl font-bold tracking-tight"
+            style={{ color: 'var(--color-text)' }}
+          >
             Create an account
           </h1>
           <p className="mt-2 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-violet-500 hover:text-violet-400 transition-colors">
+            <Link
+              to="/login"
+              className="font-medium text-violet-500 hover:text-violet-400 transition-colors"
+            >
               Sign in
             </Link>
           </p>
@@ -94,7 +102,12 @@ export const Register = () => {
             <div className="w-full border-t" style={{ borderColor: 'var(--color-border)' }} />
           </div>
           <div className="relative flex justify-center">
-            <span className="px-3 text-xs" style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>or</span>
+            <span
+              className="px-3 text-xs"
+              style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)' }}
+            >
+              or
+            </span>
           </div>
         </div>
 

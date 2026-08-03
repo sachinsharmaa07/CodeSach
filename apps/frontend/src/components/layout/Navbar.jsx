@@ -25,9 +25,15 @@ export const Navbar = () => {
     >
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-semibold" style={{ color: 'var(--color-text)' }}>
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-semibold"
+          style={{ color: 'var(--color-text)' }}
+        >
           <Code2 size={20} className="text-violet-500" />
-          <span>Code<span className="text-violet-500">Sach</span></span>
+          <span>
+            Code<span className="text-violet-500">Sach</span>
+          </span>
         </Link>
 
         {/* Nav links */}
@@ -81,8 +87,8 @@ export const Navbar = () => {
                 onClick={handleLogout}
                 className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition-colors"
                 style={{ color: 'var(--color-text-muted)' }}
-                onMouseEnter={e => e.currentTarget.style.color = 'var(--color-text)'}
-                onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-muted)'}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-text)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--color-text-muted)')}
               >
                 <LogOut size={15} />
                 <span className="hidden sm:inline">Logout</span>
@@ -91,7 +97,9 @@ export const Navbar = () => {
           ) : (
             <>
               <Link to="/login">
-                <Button variant="ghost" size="sm">Login</Button>
+                <Button variant="ghost" size="sm">
+                  Login
+                </Button>
               </Link>
               <Link to="/register">
                 <Button size="sm">Sign up</Button>
