@@ -597,7 +597,7 @@ export const ProblemDetail = () => {
           <Editor
             height="100%"
             language={language === 'cpp' ? 'cpp' : language}
-            theme={editorTheme}
+            theme={theme === 'dark' ? 'vs-dark' : 'light'}
             value={code}
             onChange={(v) => setCode(v ?? '')}
             options={{
