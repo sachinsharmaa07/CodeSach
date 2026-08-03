@@ -1,88 +1,136 @@
-# CodeSach
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=200&section=header&text=CodeSach&fontSize=70&animation=fadeIn&fontAlignY=38&desc=An%20Advanced%20Platform%20for%20Coding%20Enthusiasts" />
 
-CodeSach is a modern, high-performance Data Structures & Algorithms (DSA) learning and practice platform. It combines a seamless IDE experience with native code execution, a curated DSA tracking sheet, and a global leaderboard to help developers master algorithms.
+  <p align="center">
+    A scalable, full-stack application leveraging microservice architectures, containerization, and modern DevOps pipelines.
+  </p>
 
-## Features
+  <p align="center">
+    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node" />
+    <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
+    <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+    <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS" />
+    <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes" />
+  </p>
+</div>
 
-- **Multi-Language Support**: Write solutions in C++, Java, Python, and JavaScript natively.
-- **Fast Execution Engine**: Integrated Judge0 wrapper local execution pipeline ensuring real test cases and instant feedback without complex Docker compilation overhead in development.
-- **Progress Tracking**: Personal DSA sheet to check off problems and a contribution graph on your profile.
-- **Modern Tech Stack**:
-  - **Frontend**: React, Vite, Tailwind CSS, Monaco Editor, Zustand
-  - **Backend**: Node.js, Express, MongoDB (Mongoose), JWT & Passport (Google OAuth)
-- **Containerized**: Production-ready with fully optimized Docker images and multi-container orchestration.
+---
 
-## Getting Started
+## 🚀 Overview
 
-### Prerequisites
+**CodeSach** is an advanced platform designed to evaluate and run code submissions seamlessly. Built with scalability and security in mind, the platform integrates robust code execution engines, modern authentication flows, and a battle-tested CI/CD pipeline to ensure seamless delivery to the cloud.
 
-- Docker & Docker Compose
-- MongoDB Atlas account (or local MongoDB)
-- Google OAuth credentials (for login)
+---
 
-### Local Development via Docker
+## 📂 Folder Structure Breakdown
 
-CodeSach is completely containerized. To spin up the frontend, backend, and a local MongoDB instance, simply run:
+This repository follows a monorepo structure designed for maintainability and separation of concerns.
+
+```text
+CodeSach/
+├── .github/workflows/    # 🤖 Contains the CI/CD pipeline (ci.yml) for GitHub Actions.
+├── apps/
+│   ├── backend/          # ⚙️ Node.js/Express API. Handles auth, database, and business logic.
+│   └── frontend/         # 💻 React.js Application. The user interface.
+├── docker/               # 🐳 Miscellaneous Docker configurations.
+├── k8s/                  # ☸️ Kubernetes manifests (Deployments, Services, PVCs) for scaling.
+├── docker-compose.yml    # 📦 Local development environment using Docker Compose.
+├── docker-compose.prod.yml # 🚀 Production environment configuration using pre-built images.
+└── mykey.pem             # 🔑 (Local only) SSH key for accessing the AWS EC2 instance.
+```
+
+---
+
+## ⚙️ Core Integrations & Features
+
+### 1. Judge0 (Remote Code Execution)
+
+**What it is:** Judge0 is a robust, open-source online code execution system.
+**How it works in CodeSach:**
+When a user submits code through the frontend, the backend forwards the source code, language ID, and input/expected output data to a Judge0 instance. Judge0 securely compiles and executes the code in isolated, sandboxed environments (containers) preventing malicious code from affecting the host server. The execution results (success, failure, runtime errors, memory usage) are then streamed back to the user in real-time.
+
+### 2. Google OAuth 2.0
+
+**What it is:** The industry-standard protocol for authorization, allowing users to log in with their Google accounts securely.
+**How it works in CodeSach:**
+Instead of managing sensitive user passwords, CodeSach uses `passport-google-oauth20`. When a user clicks "Login with Google", they are redirected to Google's consent screen. Upon approval, Google sends an authorization code back to our backend. The backend exchanges this code for an access token, retrieves the user's profile, and issues a secure **JSON Web Token (JWT)** to the frontend. This JWT is then used to authenticate all subsequent API requests.
+
+---
+
+## 🛠 DevOps Tools & Architecture
+
+CodeSach leverages a modern DevOps stack to automate testing, building, and deployment, ensuring high availability and developer productivity.
+
+### Docker & Containerization
+
+- **Purpose**: Eliminates the "it works on my machine" problem.
+- **How it works**: Both the `frontend` and `backend` have their own `Dockerfile`. We use `docker-compose.yml` to spin up the entire application stack (Frontend, Backend, and MongoDB) locally with a single command (`docker-compose up`).
+
+### GitHub Actions (CI/CD)
+
+- **Purpose**: Automates the pipeline from code commit to production deployment.
+- **How it works**: Every push to the `main` branch triggers the workflow located in `.github/workflows/ci.yml`. It runs code linters, builds the applications, packages them into Docker images, pushes those images to Docker Hub, and finally SSHes into the EC2 instance to trigger a zero-downtime deployment.
+
+### AWS EC2
+
+- **Purpose**: The cloud server hosting the production application.
+- **How it works**: We use an Ubuntu-based EC2 instance (`15.252.88.13`). It runs the Docker Daemon and uses `docker-compose.prod.yml` to pull our pre-built images from Docker Hub. Traffic is routed to this instance using a DuckDNS domain.
+
+### Kubernetes (k8s)
+
+- **Purpose**: Container orchestration for infinite scalability.
+- **How it works**: While currently deployed via Docker Compose on EC2 for simplicity, the `k8s/` directory contains production-ready manifests (`Deployments`, `Services`, and `PersistentVolumeClaims`). These files describe the desired state of the application, allowing Kubernetes to automatically manage load balancing, auto-scaling, and self-healing across a cluster of nodes if you choose to migrate to a K8s cluster (like EKS).
+
+---
+
+## 🚢 Deployment Guide
+
+If you are setting up this repository from scratch or migrating to a new server, follow these steps to enable the automated CI/CD pipeline.
+
+### 1. GitHub Secrets Configuration
+
+Navigate to your repository on GitHub -> **Settings** -> **Secrets and variables** -> **Actions** -> **New repository secret**. Add the following:
+
+- `DOCKER_USERNAME`: Your Docker Hub username.
+- `DOCKER_PASSWORD`: Your Docker Hub Access Token.
+- `EC2_HOST`: The public IP of your server (e.g., `15.252.88.13`).
+- `EC2_USERNAME`: Usually `ubuntu` or `ec2-user`.
+- `EC2_SSH_KEY`: The **entire contents** of your PEM key file (including `-----BEGIN RSA...`). _Never commit your `.pem` file!_
+
+### 2. EC2 Instance Setup
+
+Before the first automated deployment runs, SSH into your server:
 
 ```bash
-docker-compose up -d --build
+chmod 400 mykey.pem
+ssh -i mykey.pem ubuntu@15.252.88.13
 ```
 
-- The **Frontend** will be available at `http://localhost:80`
-- The **Backend API** will be available at `http://localhost:5000`
+Install Docker and Docker Compose:
 
-### Environment Variables
-
-If you are running the backend directly via `npm`, ensure the following environment variables are set in a `.env` file in `apps/backend/`:
-
-```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/codesach
-JWT_SECRET=your_secret_key
-CLIENT_URL=http://localhost:5173
-GOOGLE_CLIENT_ID=your_client_id
-GOOGLE_CLIENT_SECRET=your_client_secret
-GOOGLE_CALLBACK_URL=http://localhost:5000/api/v1/auth/google/callback
+```bash
+sudo apt-get update -y
+sudo apt-get install docker.io -y
+sudo systemctl start docker && sudo systemctl enable docker
+sudo usermod -aG docker ubuntu
+sudo apt-get install docker-compose-plugin -y
 ```
 
-### Running Natively (Without Docker)
+Set up your environment variables:
 
-1. Open a terminal in the root directory and install dependencies:
-   ```bash
-   npm install --prefix apps/backend
-   npm install --prefix apps/frontend
-   ```
-2. Start the Backend:
-   ```bash
-   cd apps/backend && npm run dev
-   ```
-3. Start the Frontend:
-   ```bash
-   cd apps/frontend && npm run dev
-   ```
+```bash
+mkdir -p ~/codesach
+cd ~/codesach
+nano .env
+```
 
-## Kubernetes Deployment
+Add your production secrets (e.g., `MONGODB_URI`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`).
 
-The project includes full Kubernetes (K8s) configuration files located in the `k8s/` directory.
+### 3. DuckDNS Setup
 
-### Deploy to K8s
+1. Go to [DuckDNS](https://www.duckdns.org/) and create a subdomain.
+2. Point it to your EC2 instance's IP address.
+3. Ensure **Port 80** is open in your AWS Security Group.
 
-1. Start your Kubernetes cluster (e.g., using `minikube start`).
-2. Build your local Docker images (or push them to a registry):
-   ```bash
-   docker build -t codesach-backend:latest -f apps/backend/Dockerfile .
-   docker build -t codesach-frontend:latest -f apps/frontend/Dockerfile .
-   ```
-3. Apply all configurations to your cluster:
-   ```bash
-   kubectl apply -f k8s/
-   ```
-4. Access the application:
-   - For Minikube users: Run `minikube service frontend` to open the app.
-   - For others: The frontend service is exposed on NodePort `30080`.
-
-## Deployment
-
-The repository includes a GitHub Actions CI pipeline (`.github/workflows/ci.yml`) that lints and verifies builds on every push to the `main` branch.
-
-To deploy to production, you can clone the repository to your VPS and run `docker-compose up -d --build`, or use the Kubernetes configurations provided in `k8s/` for orchestrated deployment.
+Once this is done, pushing code to the `main` branch will automatically build and deploy your updates!
